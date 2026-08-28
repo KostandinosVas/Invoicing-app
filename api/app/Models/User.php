@@ -15,14 +15,14 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-               use HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-                   protected function casts(): array
+    protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
