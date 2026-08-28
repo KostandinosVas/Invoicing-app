@@ -23,6 +23,22 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        UID: 1000
+        GID: 1000
+    entrypoint: []    
+    command: php artisan queue:work --tries=3 
+    volumes:
+      - ./api:/var/www/html
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started      
 
   postgres:
     image: postgres:16

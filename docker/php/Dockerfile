@@ -16,4 +16,6 @@ ARG GID=1000
 RUN groupmod -o -g ${GID} www-data \
     && usermod -o -u ${UID} -g ${GID} www-data
 
+USER www-data
+
 WORKDIR /var/www/html
