@@ -18,6 +18,8 @@ RUN groupmod -o -g ${GID} www-data \
 
 ENV COMPOSER_HOME=/tmp/composer
 
+RUN echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory.ini
+
 USER www-data
 
 WORKDIR /var/www/html
