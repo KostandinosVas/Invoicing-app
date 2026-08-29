@@ -68,6 +68,14 @@ jobs:
         working-directory: api
         run: composer install --no-interaction --prefer-dist
 
+      - name: Prepare environment
+        working-directory: api
+        run: cp .env.example .env
+
+      - name: Generate app key
+        working-directory: api
+        run: php artisan key:generate
+
       - name: Run tests
         working-directory: api
         env:
