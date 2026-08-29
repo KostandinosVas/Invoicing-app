@@ -22,6 +22,7 @@ jobs:
       - name: Check code style
         working-directory: api
         run: ./vendor/bin/pint --test
+
   phpstan:
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +39,8 @@ jobs:
       - name: Static analysis
         working-directory: api
         run: ./vendor/bin/phpstan analyse --memory-limit=512M
-    pest:
+
+  pest:
     runs-on: ubuntu-latest
 
     services:
@@ -60,7 +62,7 @@ jobs:
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
 
       - name: Install dependencies
         working-directory: api
