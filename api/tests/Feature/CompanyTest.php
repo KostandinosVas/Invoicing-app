@@ -10,7 +10,7 @@ it('creates a company', function () {
 
     expect($company->name)->toBe('Τεχνομέταλ ΑΕ');
 
-    $this->assertDatabaseHas('companies', ['name' => 'Τεχνομέταλ ΑΕ']);
+    expect(Company::where('name', 'Τεχνομέταλ ΑΕ')->exists())->toBeTrue();
 });
 
 it('does not allow duplicate vat numbers', function () {
