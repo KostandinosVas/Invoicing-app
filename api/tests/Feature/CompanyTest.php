@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Models\Company;
+use Illuminate\Database\QueryException;
+
+it('creates a company', function () {
+    $company = Company::factory()->create(['name' => 'Τεχνομέταλ ΑΕ']);
+
+    expect($company->name)->toBe('Τεχνομέταλ ΑΕ');
+
+    $this->assertDatabaseHas('companies', ['name' => 'Τεχνομέταλ ΑΕ']);
+});
+
+it('does not allow duplicate vat numbers', function () {
+    Company::factory()->create(['vat_number' => '123456789']);
+
+    expect(fn () => Company::factory()->create(['vat_number' => '123456789']))
+        ->toThrow(QueryException::class);
+});
