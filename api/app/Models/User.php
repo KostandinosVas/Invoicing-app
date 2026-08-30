@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -28,5 +30,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function accessibleCompanyIds(): array
+    {
+        return array_values(
+            array_map(
+                static fn (mixed $id): int => (int) $id,
+                Company::query()->pluck('id')->all(),
+            )
+        );
     }
 }
