@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\InvoiceStatus;
 use App\Exceptions\InvalidStatusTransition;
 use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Invoice;
 use Illuminate\Database\QueryException;
 
@@ -53,9 +54,11 @@ it('keeps customer snapshot when the customer changes', function () {
         'customer_name' => 'Αρχική Επωνυμία',
     ]);
 
-    $invoice->customer->update(['name' => 'Νέα Επωνυμία']);
+    $customer = Customer::query()->findOrFail($invoice->customer_id);
+    $customer->update(['name' => 'Νέα Επωνυμία']);
+
     $invoice->refresh();
 
     expect($invoice->customer_name)->toBe('Αρχική Επωνυμία')
-        ->and($invoice->customer->name)->toBe('Νέα Επωνυμία');
+        ->and(Customer::query()->findOrFail($invoice->customer_id)->name)->toBe('Νέα Επωνυμία');
 });
