@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Pest\TestSuite;
 use Tests\TestCase;
 
 /*
@@ -14,6 +15,12 @@ use Tests\TestCase;
 | need to change it using the "pest()" function to bind different classes or traits.
 |
 */
+
+function test_case(): TestCase
+{
+    /** @var TestCase */
+    return TestSuite::getInstance()->test;
+}
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
