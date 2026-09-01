@@ -7,6 +7,7 @@ namespace App\Models;
 use Database\Factories\CompanyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Company extends Model
 {
@@ -22,4 +23,28 @@ final class Company extends Model
         'city',
         'postal_code',
     ];
+
+    /**
+     * @return HasMany<Customer, $this>
+     */
+    public function customers(): HasMany
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    /**
+     * @return HasMany<Item, $this>
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(Item::class);
+    }
+
+    /**
+     * @return HasMany<Series, $this>
+     */
+    public function series(): HasMany
+    {
+        return $this->hasMany(Series::class);
+    }
 }
