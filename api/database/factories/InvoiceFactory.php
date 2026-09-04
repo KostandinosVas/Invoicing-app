@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\InvoiceLine;
 use App\Models\Series;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -46,5 +47,21 @@ final class InvoiceFactory extends Factory
             'customer_id' => Customer::factory()->create(['company_id' => $company->id])->id,
             'series_id' => Series::factory()->create(['company_id' => $company->id])->id,
         ]);
+    }
+
+    public function withLine(): self
+    {
+        return $this->afterCreating(function (Invoice $invoice): void {
+            $line = InvoiceLine::factory()->make([
+                'invoice_id' => $invoice->id,
+                'position' => 1,
+                'quantity' => '1.000',
+                'unit_price_cents' => 10000,
+                'vat_rate' => 24,
+            ]);
+
+            $line->calculateTotals();
+            $line->save();
+        });
     }
 }

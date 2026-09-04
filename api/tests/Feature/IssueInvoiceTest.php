@@ -11,7 +11,7 @@ use App\Models\Series;
 
 it('assigns the next number in the series', function () {
     $company = Company::factory()->create();
-    $invoice = Invoice::factory()->forCompany($company)->create();
+    $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
 
     (new IssueInvoice)->handle($invoice);
 
@@ -23,8 +23,8 @@ it('increments the series counter', function () {
     $company = Company::factory()->create();
     $series = Series::factory()->create(['company_id' => $company->id]);
 
-    $first = Invoice::factory()->forCompany($company)->create(['series_id' => $series->id]);
-    $second = Invoice::factory()->forCompany($company)->create(['series_id' => $series->id]);
+    $first = Invoice::factory()->forCompany($company)->withLine()->create(['series_id' => $series->id]);
+    $second = Invoice::factory()->forCompany($company)->withLine()->create(['series_id' => $series->id]);
 
     (new IssueInvoice)->handle($first);
     (new IssueInvoice)->handle($second);
@@ -37,7 +37,7 @@ it('increments the series counter', function () {
 it('does not consume a number when the transition is invalid', function () {
     $company = Company::factory()->create();
     $series = Series::factory()->create(['company_id' => $company->id]);
-    $invoice = Invoice::factory()->forCompany($company)->create(['series_id' => $series->id]);
+    $invoice = Invoice::factory()->forCompany($company)->withLine()->create(['series_id' => $series->id]);
 
     (new IssueInvoice)->handle($invoice);
 
@@ -54,8 +54,8 @@ it('keeps separate numbering per series', function () {
     $seriesA = Series::factory()->create(['company_id' => $company->id]);
     $seriesB = Series::factory()->create(['company_id' => $company->id]);
 
-    $a = Invoice::factory()->forCompany($company)->create(['series_id' => $seriesA->id]);
-    $b = Invoice::factory()->forCompany($company)->create(['series_id' => $seriesB->id]);
+    $a = Invoice::factory()->forCompany($company)->withLine()->create(['series_id' => $seriesA->id]);
+    $b = Invoice::factory()->forCompany($company)->withLine()->create(['series_id' => $seriesB->id]);
 
     (new IssueInvoice)->handle($a);
     (new IssueInvoice)->handle($b);
@@ -69,7 +69,7 @@ it('does not issue duplicate numbers under concurrency', function () {
     $series = Series::factory()->create(['company_id' => $company->id]);
 
     $invoices = collect(range(1, 20))->map(
-        fn (): Invoice => Invoice::factory()->forCompany($company)->create(['series_id' => $series->id])
+        fn (): Invoice => Invoice::factory()->forCompany($company)->withLine()->create(['series_id' => $series->id])
     );
 
     $action = new IssueInvoice;
@@ -87,4 +87,16 @@ it('does not issue duplicate numbers under concurrency', function () {
 
     expect($numbers)->toBe(range(1, 20))
         ->and($series->fresh()?->last_number)->toBe(20);
+});
+
+it('refuses to issue an invoice without lines', function () {
+    $company = Company::factory()->create();
+    $series = Series::factory()->create(['company_id' => $company->id]);
+    $invoice = Invoice::factory()->forCompany($company)->create(['series_id' => $series->id]);
+
+    expect(fn () => (new IssueInvoice)->handle($invoice))
+        ->toThrow(DomainException::class);
+
+    expect($series->fresh()?->last_number)->toBe(0)
+        ->and($invoice->fresh()?->number)->toBeNull();
 });
