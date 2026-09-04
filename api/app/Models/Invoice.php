@@ -11,6 +11,7 @@ use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property InvoiceStatus $status
@@ -85,5 +86,22 @@ final class Invoice extends Model
     public function series(): BelongsTo
     {
         return $this->belongsTo(Series::class);
+    }
+
+    /**
+     * @return HasMany<InvoiceLine, $this>
+     */
+    public function lines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class)->orderBy('position');
+    }
+
+    public function recalculateTotals(): void
+    {
+        $lines = $this->lines()->get();
+
+        $this->net_amount_cents = (int) $lines->sum('net_amount_cents');
+        $this->vat_amount_cents = (int) $lines->sum('vat_amount_cents');
+        $this->total_cents = (int) $lines->sum('total_cents');
     }
 }
