@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\Series;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 
 final class IssueInvoice
@@ -14,6 +15,10 @@ final class IssueInvoice
     public function handle(Invoice $invoice): Invoice
     {
         return DB::transaction(function () use ($invoice): Invoice {
+            if ($invoice->lines()->doesntExist()) {
+                throw new DomainException('Δεν μπορεί να εκδοθεί παραστατικό χωρίς γραμμές.');
+            }
+
             $series = Series::query()
                 ->whereKey($invoice->series_id)
                 ->lockForUpdate()
