@@ -36,5 +36,7 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="SANCTUM_STATEFUL_DOMAINS" value="localhost:5173"/>
+        <env name="SESSION_DOMAIN" value="localhost"/>
     </php>
 </phpunit>
