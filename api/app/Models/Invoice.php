@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property InvoiceStatus $status
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $net_amount_cents
  * @property int $vat_amount_cents
  * @property int $total_cents
+ * @property Carbon|null $issue_date
  */
 final class Invoice extends Model
 {
