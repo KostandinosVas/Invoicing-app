@@ -24,6 +24,11 @@ final class Series extends Model
         'is_active',
     ];
 
+    /** @var array<string, mixed> */
+    protected $attributes = [
+        'last_number' => 0,
+    ];
+
     /**
      * @return array<string, string>
      */

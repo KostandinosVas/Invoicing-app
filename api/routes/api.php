@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\Api\SeriesController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +20,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::get('/customers/{customer}', [CustomerController::class, 'show']);
     Route::post('/customers', [CustomerController::class, 'store']);
+    Route::get('/items', [ItemController::class, 'index']);
+    Route::get('/items/{item}', [ItemController::class, 'show']);
+    Route::post('/items', [ItemController::class, 'store']);
+    Route::get('/series', [SeriesController::class, 'index']);
+    Route::get('/series/{series}', [SeriesController::class, 'show']);
+    Route::post('/series', [SeriesController::class, 'store']);
 });
