@@ -28,6 +28,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setIsLoading(false));
   }, []);
 
+  useEffect(() => {
+    const interceptor = api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          setUser(null);
+        }
+        return Promise.reject(error);
+  },);
+
+    return () => api.interceptors.response.eject(interceptor);
+  }, []);
+
   async function login(email: string, password: string) {
     await getCsrfCookie();
     const res = await api.post<User>('/api/login', { email, password });

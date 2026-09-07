@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const schema = z.object({
   email: z.string().email('Μη έγκυρο email'),
@@ -13,6 +14,9 @@ type FormValues = z.infer<typeof schema>;
 
 export function Login() {
   const { login } = useAuth();
+    const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/';
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -25,6 +29,7 @@ export function Login() {
     setServerError(null);
     try {
       await login(values.email, values.password);
+      navigate(from, { replace: true });
     } catch {
       setServerError('Τα στοιχεία σύνδεσης δεν είναι σωστά.');
     }
