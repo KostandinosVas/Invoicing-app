@@ -1,0 +1,54 @@
+:root {
+  /* Χρώματα — βάση */
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-border: #e3e6ea;
+  --color-border-strong: #c9cfd6;
+
+  /* Κείμενο */
+  --color-text: #14181f;
+  --color-text-muted: #5f6b7a;
+  --color-text-subtle: #8b95a3;
+
+  /* Brand */
+  --color-primary: #0b5fff;
+  --color-primary-hover: #0a52d9;
+  --color-primary-soft: #e8f0ff;
+
+  /* Καταστάσεις */
+  --color-danger: #d92d20;
+  --color-danger-soft: #fef3f2;
+  --color-success: #067647;
+  --color-success-soft: #ecfdf3;
+  --color-warning: #b54708;
+  --color-warning-soft: #fffaeb;
+
+  /* Αποστάσεις — κλίμακα 4px */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Τυπογραφία */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+
+  /* Γωνίες */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* Σκιές */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1);
+}

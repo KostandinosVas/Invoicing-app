@@ -4,6 +4,10 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { useCreateCompany } from '../hooks/useCreateCompany';
+import { PageHeader } from '../components/PageHeader';
+import { Button } from '../components/Button';
+import { Field } from '../components/Field';
+import styles from './CompanyCreate.module.css';
 
 const schema = z.object({
   name: z.string().min(1, 'Η επωνυμία είναι υποχρεωτική'),
@@ -43,32 +47,70 @@ export function CompanyCreate() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h2>Νέα εταιρεία</h2>
+    <>
+      <PageHeader
+        title="Νέα εταιρεία"
+        subtitle="Τα στοιχεία θα εμφανίζονται στα παραστατικά που εκδίδει."
+      />
 
-      <label htmlFor="name">Επωνυμία</label>
-      <input id="name" {...register('name')} />
-      {errors.name && <p>{errors.name.message}</p>}
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+        <Field
+          label="Επωνυμία"
+          error={errors.name?.message}
+          {...register('name')}
+        />
 
-      <label htmlFor="vat_number">ΑΦΜ</label>
-      <input id="vat_number" {...register('vat_number')} />
-      {errors.vat_number && <p>{errors.vat_number.message}</p>}
+        <div className={styles.row}>
+          <Field
+            label="ΑΦΜ"
+            hint="9 ψηφία"
+            error={errors.vat_number?.message}
+            inputMode="numeric"
+            {...register('vat_number')}
+          />
 
-      <label htmlFor="tax_office">ΔΟΥ</label>
-      <input id="tax_office" {...register('tax_office')} />
+          <Field
+            label="ΔΟΥ"
+            error={errors.tax_office?.message}
+            {...register('tax_office')}
+          />
+        </div>
 
-      <label htmlFor="address">Διεύθυνση</label>
-      <input id="address" {...register('address')} />
+        <Field
+          label="Διεύθυνση"
+          error={errors.address?.message}
+          {...register('address')}
+        />
 
-      <label htmlFor="city">Πόλη</label>
-      <input id="city" {...register('city')} />
+        <div className={styles.row}>
+          <Field
+            label="Πόλη"
+            error={errors.city?.message}
+            {...register('city')}
+          />
 
-      <label htmlFor="postal_code">ΤΚ</label>
-      <input id="postal_code" {...register('postal_code')} />
+          <Field
+            label="Ταχυδρομικός κώδικας"
+            error={errors.postal_code?.message}
+            inputMode="numeric"
+            {...register('postal_code')}
+          />
+        </div>
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Αποθήκευση…' : 'Αποθήκευση'}
-      </button>
-    </form>
+        <div className={styles.actions}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => navigate('/companies')}
+          >
+            Ακύρωση
+          </Button>
+
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Αποθήκευση…' : 'Αποθήκευση'}
+          </Button>
+        </div>
+      </form>
+    </>
   );
 }
