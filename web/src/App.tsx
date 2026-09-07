@@ -1,5 +1,6 @@
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { Login } from './pages/Login';
+import { Companies } from './pages/Companies';
 
 function Shell() {
   const { user, isLoading, logout } = useAuth();
@@ -12,6 +13,7 @@ function Shell() {
     <div>
       <p>Συνδεδεμένος ως {user.name}</p>
       <button onClick={() => logout()}>Αποσύνδεση</button>
+      <Companies />
     </div>
   );
 }
