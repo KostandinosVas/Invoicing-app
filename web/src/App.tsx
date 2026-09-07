@@ -4,6 +4,7 @@ import { RequireAuth } from './auth/RequireAuth';
 import { AppLayout } from './layouts/AppLayout';
 import { Login } from './pages/Login';
 import { Companies } from './pages/Companies';
+import { CompanyCreate } from './pages/CompanyCreate';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route element={<AppLayout />}>
               <Route path="/" element={<Navigate to="/companies" replace />} />
               <Route path="/companies" element={<Companies />} />
+              <Route path="/companies/new" element={<CompanyCreate />} />
             </Route>
           </Route>
 

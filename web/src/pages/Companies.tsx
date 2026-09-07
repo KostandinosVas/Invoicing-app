@@ -1,4 +1,5 @@
 import { useCompanies } from '../hooks/useCompanies';
+import { Link } from 'react-router-dom';
 
 export function Companies() {
   const { data, isLoading, isError } = useCompanies();
@@ -14,6 +15,8 @@ export function Companies() {
   return (
     <div>
       <h2>Εταιρείες</h2>
+
+      <Link to="/companies/new">Νέα εταιρεία</Link>
 
       <table>
         <thead>
