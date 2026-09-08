@@ -30,3 +30,14 @@ export type Customer = {
   postal_code: string | null;
   country: string;
 };
+
+export type Item = {
+  id: number;
+  company_id: number;
+  code: string | null;
+  name: string;
+  unit: string;
+  unit_price_cents: number;
+  vat_rate: number;
+  is_active: boolean;
+};
