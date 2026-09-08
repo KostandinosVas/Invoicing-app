@@ -8,6 +8,7 @@ const links = [
   { to: '/customers', label: 'Πελάτες' },
   { to: '/items', label: 'Είδη' },
   { to: '/invoices', label: 'Παραστατικά' },
+  { to: '/series', label: 'Σειρές' },
 ];
 
 export function AppLayout() {
