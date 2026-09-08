@@ -7,6 +7,8 @@ import { Companies } from './pages/Companies';
 import { CompanyCreate } from './pages/CompanyCreate';
 import { Customers } from './pages/Customers';
 import { CustomerCreate } from './pages/CustomerCreate';
+import { Items } from './pages/Items';
+import { ItemCreate } from './pages/ItemCreate';
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
               <Route path="/companies/new" element={<CompanyCreate />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/customers/new" element={<CustomerCreate />} />
+              <Route path="/items" element={<Items />} />
+              <Route path="/items/new" element={<ItemCreate />} />
             </Route>
           </Route>
 
