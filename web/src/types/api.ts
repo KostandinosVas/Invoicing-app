@@ -41,3 +41,14 @@ export type Item = {
   vat_rate: number;
   is_active: boolean;
 };
+
+export type DocumentType = 'invoice' | 'credit_note' | 'cancellation';
+
+export type Series = {
+  id: number;
+  company_id: number;
+  code: string;
+  document_type: DocumentType;
+  last_number: number;
+  is_active: boolean;
+};

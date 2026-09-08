@@ -9,6 +9,8 @@ import { Customers } from './pages/Customers';
 import { CustomerCreate } from './pages/CustomerCreate';
 import { Items } from './pages/Items';
 import { ItemCreate } from './pages/ItemCreate';
+import { SeriesList } from './pages/SeriesList';
+import { SeriesCreate } from './pages/SeriesCreate';
 
 export default function App() {
   return (
@@ -26,6 +28,8 @@ export default function App() {
               <Route path="/customers/new" element={<CustomerCreate />} />
               <Route path="/items" element={<Items />} />
               <Route path="/items/new" element={<ItemCreate />} />
+              <Route path="/series" element={<SeriesList />} />
+              <Route path="/series/new" element={<SeriesCreate />} />
             </Route>
           </Route>
 
