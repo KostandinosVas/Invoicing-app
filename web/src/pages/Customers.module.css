@@ -2,5 +2,8 @@
   display: flex;
   gap: var(--space-4);
   margin-bottom: var(--space-4);
-  max-width: 280px;
+}
+
+.filters > * {
+  min-width: 220px;
 }

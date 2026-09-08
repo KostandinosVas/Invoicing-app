@@ -11,6 +11,9 @@ import { Items } from './pages/Items';
 import { ItemCreate } from './pages/ItemCreate';
 import { SeriesList } from './pages/SeriesList';
 import { SeriesCreate } from './pages/SeriesCreate';
+import { InvoiceCreate } from './pages/InvoiceCreate';
+import { Invoices } from './pages/Invoices';
+import { InvoiceShow } from './pages/InvoiceShow';
 
 export default function App() {
   return (
@@ -30,6 +33,10 @@ export default function App() {
               <Route path="/items/new" element={<ItemCreate />} />
               <Route path="/series" element={<SeriesList />} />
               <Route path="/series/new" element={<SeriesCreate />} />
+              <Route path="/invoices/new" element={<InvoiceCreate />} />
+              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/invoices/new" element={<InvoiceCreate />} />
+              <Route path="/invoices/:id" element={<InvoiceShow />} />
             </Route>
           </Route>
 
