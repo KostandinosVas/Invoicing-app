@@ -1,0 +1,108 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.cardTitle {
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.headerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lineRow {
+  display: grid;
+  grid-template-columns: 1.4fr 2fr 0.7fr 0.9fr 0.7fr auto auto;
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.lineHeader {
+  display: grid;
+  grid-template-columns: 1.4fr 2fr 0.7fr 0.9fr 0.7fr auto auto;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-subtle);
+  padding-bottom: var(--space-1);
+}
+
+.lineTotal {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding-top: var(--space-2);
+  min-width: 90px;
+  white-space: nowrap;
+}
+
+.removeCell {
+  padding-top: var(--space-1);
+}
+
+.addLine {
+  align-self: flex-start;
+  margin-top: var(--space-3);
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-left: auto;
+  min-width: 260px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.totalLabel {
+  color: var(--color-text-muted);
+}
+
+.totalValue {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.grandTotal {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-2);
+  font-weight: 600;
+  font-size: var(--text-lg);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+.formError {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
