@@ -13,10 +13,10 @@ import { PageHeader } from '../components/PageHeader';
 import { Button } from '../components/Button';
 import { Field } from '../components/Field';
 import { Select } from '../components/Select';
-import { formatCents } from '../lib/money';
 import { calculateLine, sumTotals } from '../lib/calculations';
 import type { DocumentType } from '../types/api';
 import styles from './InvoiceCreate.module.css';
+import { formatCents, formatEurosInput, parseEuros } from '../lib/money';
 
 const VAT_RATES = [24, 13, 6, 0];
 
@@ -24,7 +24,7 @@ const lineSchema = z.object({
   item_id: z.string(),
   description: z.string().min(1, 'Υποχρεωτικό'),
   quantity: z.string().regex(/^\d+([.,]\d{1,3})?$/, 'Μη έγκυρη'),
-  unit_price_cents: z.string().regex(/^\d+$/, 'Μη έγκυρη'),
+  unit_price: z.string().refine((v) => parseEuros(v) !== null, 'Μη έγκυρη'),
   vat_rate: z.string(),
 });
 
@@ -42,7 +42,7 @@ const emptyLine = {
   item_id: '',
   description: '',
   quantity: '1',
-  unit_price_cents: '0',
+  unit_price: '0,00',
   vat_rate: '24',
 };
 
@@ -95,7 +95,7 @@ export function InvoiceCreate() {
   const lineTotals = (watchedLines ?? []).map((line) =>
     calculateLine({
       quantity: line?.quantity ?? '0',
-      unitPriceCents: Number(line?.unit_price_cents ?? 0),
+      unitPriceCents: parseEuros(line?.unit_price ?? '0') ?? 0,
       vatRate: Number(line?.vat_rate ?? 0),
     }),
   );
@@ -107,7 +107,7 @@ export function InvoiceCreate() {
     if (!item) return;
 
     setValue(`lines.${index}.description`, item.name);
-    setValue(`lines.${index}.unit_price_cents`, String(item.unit_price_cents));
+    setValue(`lines.${index}.unit_price`, formatEurosInput(item.unit_price_cents));
     setValue(`lines.${index}.vat_rate`, String(item.vat_rate));
   }
 
@@ -130,7 +130,7 @@ export function InvoiceCreate() {
           item_id: line.item_id ? Number(line.item_id) : undefined,
           description: line.description,
           quantity: line.quantity.replace(',', '.'),
-          unit_price_cents: Number(line.unit_price_cents),
+          unit_price_cents: parseEuros(line.unit_price) ?? 0,
           vat_rate: Number(line.vat_rate),
         })),
       });
@@ -205,7 +205,7 @@ export function InvoiceCreate() {
             <span>Είδος</span>
             <span>Περιγραφή</span>
             <span>Ποσότητα</span>
-            <span>Τιμή (λεπτά)</span>
+            <span>Τιμή (€)</span>
             <span>ΦΠΑ</span>
             <span>Σύνολο</span>
             <span />
@@ -239,9 +239,9 @@ export function InvoiceCreate() {
 
                 <Field
                   label=""
-                  inputMode="numeric"
-                  error={errors.lines?.[index]?.unit_price_cents?.message}
-                  {...register(`lines.${index}.unit_price_cents`)}
+                  inputMode="decimal"
+                  error={errors.lines?.[index]?.unit_price?.message}
+                  {...register(`lines.${index}.unit_price`)}
                 />
 
                 <Select
