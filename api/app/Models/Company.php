@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string|null $mydata_user_id
+ * @property string|null $mydata_subscription_key
+ */
 final class Company extends Model
 {
     /** @use HasFactory<CompanyFactory> */
@@ -46,5 +50,22 @@ final class Company extends Model
     public function series(): HasMany
     {
         return $this->hasMany(Series::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'mydata_user_id' => 'encrypted',
+            'mydata_subscription_key' => 'encrypted',
+        ];
+    }
+
+    public function hasMydataCredentials(): bool
+    {
+        return $this->mydata_user_id !== null
+            && $this->mydata_subscription_key !== null;
     }
 }
