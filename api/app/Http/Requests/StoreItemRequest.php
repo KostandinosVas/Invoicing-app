@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\IncomeClassification;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,6 +27,7 @@ final class StoreItemRequest extends FormRequest
             'unit_price_cents' => ['required', 'integer', 'min:0'],
             'vat_rate' => ['required', 'integer', Rule::in([0, 6, 13, 24])],
             'is_active' => ['boolean'],
+            'income_classification' => ['required', Rule::enum(IncomeClassification::class)],
         ];
     }
 }

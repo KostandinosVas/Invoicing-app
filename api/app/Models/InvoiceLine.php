@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\IncomeClassification;
 use App\ValueObjects\Money;
 use Database\Factories\InvoiceLineFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $vat_amount_cents
  * @property int $total_cents
  * @property string $quantity
+ * @property IncomeClassification $income_classification
  */
 final class InvoiceLine extends Model
 {
@@ -33,6 +35,7 @@ final class InvoiceLine extends Model
         'quantity',
         'unit_price_cents',
         'vat_rate',
+        'income_classification',
     ];
 
     /**
@@ -47,6 +50,7 @@ final class InvoiceLine extends Model
             'net_amount_cents' => 'integer',
             'vat_amount_cents' => 'integer',
             'total_cents' => 'integer',
+            'income_classification' => IncomeClassification::class,
         ];
     }
 

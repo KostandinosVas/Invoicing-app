@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\IncomeClassification;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
@@ -72,6 +73,8 @@ final class CreateInvoice
             'quantity' => (string) $data['quantity'],
             'unit_price_cents' => $data['unit_price_cents'] ?? ($item !== null ? $item->unit_price_cents : 0),
             'vat_rate' => $data['vat_rate'] ?? ($item !== null ? $item->vat_rate : 24),
+            'income_classification' => $data['income_classification']
+                ?? ($item !== null ? $item->income_classification : IncomeClassification::ServicesProvision),
         ]);
 
         $line->calculateTotals();

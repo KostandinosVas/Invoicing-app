@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\IncomeClassification;
 use App\Models\Company;
 use App\Models\Item;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -29,6 +30,7 @@ final class ItemFactory extends Factory
             'unit_price_cents' => $this->faker->numberBetween(100, 100000),
             'vat_rate' => $this->faker->randomElement([24, 13, 6, 0]),
             'is_active' => true,
+            'income_classification' => IncomeClassification::ServicesProvision,
         ];
     }
 }

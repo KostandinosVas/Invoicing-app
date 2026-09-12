@@ -17,6 +17,7 @@ it('creates an item', function () {
             'name' => 'Συμβουλευτικές υπηρεσίες',
             'unit_price_cents' => 5000,
             'vat_rate' => 24,
+            'income_classification' => 'services_provision',
         ])
         ->assertStatus(201)
         ->assertJsonPath('data.unit_price_cents', 5000);
