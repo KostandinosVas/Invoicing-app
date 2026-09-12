@@ -27,6 +27,7 @@ final class CompanyResource extends JsonResource
             'city' => $this->city,
             'postal_code' => $this->postal_code,
             'created_at' => $this->created_at?->toIso8601String(),
+            'has_mydata_credentials' => $this->hasMydataCredentials(),
         ];
     }
 }

@@ -33,4 +33,9 @@ final class CompanyPolicy
     {
         return false;
     }
+
+    public function manageCredentials(User $user, Company $company): bool
+    {
+        return $this->view($user, $company);
+    }
 }
