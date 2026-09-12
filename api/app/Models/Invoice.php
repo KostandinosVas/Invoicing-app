@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\InvoiceStatus;
+use App\Enums\MydataInvoiceType;
 use App\Exceptions\InvalidStatusTransition;
 use App\Models\Concerns\BelongsToCompany;
 use Database\Factories\InvoiceFactory;
@@ -21,6 +22,8 @@ use Illuminate\Support\Carbon;
  * @property int $vat_amount_cents
  * @property int $total_cents
  * @property Carbon|null $issue_date
+ * @property MydataInvoiceType|null $mydata_invoice_type
+ * @property int $payment_method
  */
 final class Invoice extends Model
 {
@@ -62,6 +65,8 @@ final class Invoice extends Model
             'vat_amount_cents' => 'integer',
             'total_cents' => 'integer',
             'mydata_submitted_at' => 'datetime',
+            'mydata_invoice_type' => MydataInvoiceType::class,
+            'payment_method' => 'integer',
         ];
     }
 

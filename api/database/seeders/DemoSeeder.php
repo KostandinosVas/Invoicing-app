@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\IncomeClassification;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Item;
@@ -86,12 +87,12 @@ final class DemoSeeder extends Seeder
     private function seedItems(Company $company): void
     {
         $items = [
-            ['code' => 'SRV-001', 'name' => 'Συμβουλευτικές υπηρεσίες', 'unit' => 'ώρα', 'unit_price_cents' => 5000, 'vat_rate' => 24],
-            ['code' => 'SRV-002', 'name' => 'Τεχνική υποστήριξη', 'unit' => 'ώρα', 'unit_price_cents' => 3500, 'vat_rate' => 24],
-            ['code' => 'PRD-001', 'name' => 'Μεταλλικό πλαίσιο 60x40', 'unit' => 'τεμ', 'unit_price_cents' => 12750, 'vat_rate' => 24],
-            ['code' => 'PRD-002', 'name' => 'Ελαιόλαδο εξαιρετικό παρθένο 5L', 'unit' => 'τεμ', 'unit_price_cents' => 4200, 'vat_rate' => 13],
-            ['code' => 'PRD-003', 'name' => 'Έντυπο ενημερωτικό υλικό', 'unit' => 'τεμ', 'unit_price_cents' => 250, 'vat_rate' => 6],
-            ['code' => 'SRV-003', 'name' => 'Μεταφορικά εντός Αττικής', 'unit' => 'δρομ', 'unit_price_cents' => 2500, 'vat_rate' => 24],
+            ['code' => 'SRV-001', 'name' => 'Συμβουλευτικές υπηρεσίες', 'unit' => 'ώρα', 'unit_price_cents' => 5000, 'vat_rate' => 24, 'income_classification' => IncomeClassification::ServicesProvision],
+            ['code' => 'SRV-002', 'name' => 'Τεχνική υποστήριξη', 'unit' => 'ώρα', 'unit_price_cents' => 3500, 'vat_rate' => 24, 'income_classification' => IncomeClassification::ServicesProvision],
+            ['code' => 'PRD-001', 'name' => 'Μεταλλικό πλαίσιο 60x40', 'unit' => 'τεμ', 'unit_price_cents' => 12750, 'vat_rate' => 24, 'income_classification' => IncomeClassification::GoodsSale],
+            ['code' => 'PRD-002', 'name' => 'Ελαιόλαδο εξαιρετικό παρθένο 5L', 'unit' => 'τεμ', 'unit_price_cents' => 4200, 'vat_rate' => 13, 'income_classification' => IncomeClassification::GoodsSale],
+            ['code' => 'PRD-003', 'name' => 'Έντυπο ενημερωτικό υλικό', 'unit' => 'τεμ', 'unit_price_cents' => 250, 'vat_rate' => 6, 'income_classification' => IncomeClassification::GoodsSale],
+            ['code' => 'SRV-003', 'name' => 'Μεταφορικά εντός Αττικής', 'unit' => 'δρομ', 'unit_price_cents' => 2500, 'vat_rate' => 24, 'income_classification' => IncomeClassification::ServicesProvision],
         ];
 
         foreach ($items as $data) {

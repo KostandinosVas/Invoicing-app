@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\IncomeClassification;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -33,6 +34,7 @@ final class InvoiceLineFactory extends Factory
             'net_amount_cents' => 0,
             'vat_amount_cents' => 0,
             'total_cents' => 0,
+            'income_classification' => IncomeClassification::ServicesProvision,
         ];
     }
 }

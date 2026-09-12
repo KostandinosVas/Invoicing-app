@@ -27,6 +27,7 @@ final class ItemResource extends JsonResource
             'unit_price_cents' => $this->unit_price_cents,
             'vat_rate' => $this->vat_rate,
             'is_active' => $this->is_active,
+            'income_classification' => $this->income_classification->value,
         ];
     }
 }
