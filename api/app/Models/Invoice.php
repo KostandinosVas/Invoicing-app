@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $issue_date
  * @property MydataInvoiceType|null $mydata_invoice_type
  * @property int $payment_method
+ * @property Carbon|null $mydata_submitted_at
  */
 final class Invoice extends Model
 {
@@ -110,5 +111,13 @@ final class Invoice extends Model
         $this->net_amount_cents = (int) $lines->sum('net_amount_cents');
         $this->vat_amount_cents = (int) $lines->sum('vat_amount_cents');
         $this->total_cents = (int) $lines->sum('total_cents');
+    }
+
+    /**
+     * @return HasMany<Submission, $this>
+     */
+    public function submissions(): HasMany
+    {
+        return $this->hasMany(Submission::class)->orderByDesc('attempt');
     }
 }

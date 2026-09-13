@@ -42,4 +42,13 @@ final class InvoicePolicy
         return $this->view($user, $invoice)
             && $invoice->status === InvoiceStatus::Draft;
     }
+
+    public function submit(User $user, Invoice $invoice): bool
+    {
+        return $this->view($user, $invoice)
+            && in_array($invoice->status, [
+                InvoiceStatus::Issued,
+                InvoiceStatus::Rejected,
+            ], true);
+    }
 }
