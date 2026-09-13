@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\CreateInvoice;
 use App\Actions\IssueInvoice;
+use App\Actions\SubmitInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
@@ -54,6 +55,15 @@ final class InvoiceController extends Controller
     public function issue(Invoice $invoice, IssueInvoice $action): InvoiceResource
     {
         $this->authorize('issue', $invoice);
+
+        $action->handle($invoice);
+
+        return new InvoiceResource($invoice->load('lines'));
+    }
+
+    public function submit(Invoice $invoice, SubmitInvoice $action): InvoiceResource
+    {
+        $this->authorize('submit', $invoice);
 
         $action->handle($invoice);
 
