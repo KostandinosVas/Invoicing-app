@@ -110,3 +110,34 @@ it('uses exponential backoff', function () {
     expect((new SubmitInvoiceToMydata($submission))->backoff())
         ->toBe([30, 120, 600, 1800]);
 });
+
+it('does not retry when credentials are missing', function () {
+    Http::fake();
+
+    $company = Company::factory()->create(); // χωρίς credentials
+
+    $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
+    (new IssueInvoice)->handle($invoice);
+    $invoice->transitionTo(InvoiceStatus::Submitting);
+    $invoice->save();
+
+    $submission = Submission::create([
+        'invoice_id' => $invoice->id,
+        'idempotency_key' => (string) Str::uuid(),
+        'status' => SubmissionStatus::Pending,
+        'attempt' => 1,
+        'request_payload' => '<InvoicesDoc/>',
+    ]);
+
+    (new SubmitInvoiceToMydata($submission))->handle(app(MydataClient::class));
+
+    $submission->refresh();
+
+    expect($submission->status)->toBe(SubmissionStatus::Failed)
+        ->and($submission->completed_at)->not->toBeNull();
+
+    // Το παραστατικό δεν μένει κολλημένο σε submitting.
+    expect($invoice->fresh()?->status)->toBe(InvoiceStatus::Rejected);
+
+    Http::assertNothingSent();
+});

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSubmitInvoice } from '../hooks/useSubmitInvoice';
 import { isAxiosError } from 'axios';
 import { useInvoice } from '../hooks/useInvoices';
 import { useIssueInvoice } from '../hooks/useIssueInvoice';
@@ -18,6 +19,8 @@ export function InvoiceShow() {
 
   const { data: invoice, isLoading, isError } = useInvoice(invoiceId);
   const issueInvoice = useIssueInvoice();
+  const submitInvoice = useSubmitInvoice();
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [issueError, setIssueError] = useState<string | null>(null);
 
   if (isLoading) return <p>Φόρτωση…</p>;
@@ -42,6 +45,25 @@ export function InvoiceShow() {
     }
   }
 
+
+  async function handleSubmit() {
+    setSubmitError(null);
+
+    try {
+      await submitInvoice.mutateAsync(invoiceId);
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 403) {
+        setSubmitError('Το παραστατικό δεν μπορεί να διαβιβαστεί στην τρέχουσα κατάσταση.');
+      } else if (isAxiosError(error) && error.response?.status === 500) {
+        setSubmitError('Η εταιρεία δεν έχει διαπιστευτήρια myDATA.');
+      } else {
+        setSubmitError('Η διαβίβαση απέτυχε. Δοκιμάστε ξανά.');
+      }
+    }
+  }
+
+  const canSubmit = invoice.status === 'issued' || invoice.status === 'rejected';
+
   const title = invoice.number
     ? `${documentTypeLabels[invoice.document_type]} #${invoice.number}`
     : `${documentTypeLabels[invoice.document_type]} (προσχέδιο)`;
@@ -61,7 +83,15 @@ export function InvoiceShow() {
                 {issueInvoice.isPending ? 'Έκδοση…' : 'Έκδοση'}
               </Button>
             )}
+
+            {canSubmit && (
+              <Button onClick={handleSubmit} disabled={submitInvoice.isPending}>
+                {submitInvoice.isPending ? 'Διαβίβαση…' : 'Διαβίβαση στο myDATA'}
+              </Button>
+            )}
           </div>
+
+          
         }
       />
 
@@ -74,6 +104,15 @@ export function InvoiceShow() {
       )}
 
       {issueError && <p className={styles.error}>{issueError}</p>}
+
+      {submitError && <p className={styles.error}>{submitError}</p>}
+
+      {invoice.status === 'submitting' && (
+        <div className={styles.warning}>
+          Η διαβίβαση βρίσκεται σε εξέλιξη. Η απάντηση της ΑΑΔΕ ενδέχεται να
+          καθυστερήσει — ανανεώστε τη σελίδα σε λίγο.
+        </div>
+      )}
 
       <div className={styles.grid}>
         <section className={styles.card}>
@@ -151,7 +190,9 @@ export function InvoiceShow() {
               <span>{invoice.issue_date ?? '—'}</span>
 
               <span className={styles.metaLabel}>ΜΑΡΚ</span>
-              <span>{invoice.mydata_mark ?? '—'}</span>
+              <span className={tableStyles.numeric}>
+                {invoice.mydata_mark ?? '—'}
+              </span>
             </div>
           </section>
 

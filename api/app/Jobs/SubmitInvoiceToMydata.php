@@ -6,6 +6,8 @@ namespace App\Jobs;
 
 use App\Enums\InvoiceStatus;
 use App\Enums\SubmissionStatus;
+use App\Exceptions\MydataNotConfigured;
+use App\Models\Invoice;
 use App\Models\Submission;
 use App\Services\Mydata\MydataClient;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -61,7 +63,15 @@ final class SubmitInvoiceToMydata implements ShouldQueue
         $submission->sent_at = now();
         $submission->save();
 
-        $response = $client->sendInvoice($company, $submission->request_payload);
+        try {
+            $response = $client->sendInvoice($company, $submission->request_payload);
+        } catch (MydataNotConfigured $exception) {
+            // Μόνιμη συνθήκη: το retry δεν θα τη λύσει.
+            $this->markPermanentFailure($submission, $invoice, $exception->getMessage());
+            $this->fail($exception);
+
+            return;
+        }
 
         if (! $response->accepted) {
             $submission->status = SubmissionStatus::Rejected;
@@ -101,10 +111,32 @@ final class SubmitInvoiceToMydata implements ShouldQueue
         $submission->completed_at = now();
         $submission->save();
 
+        $invoice = $submission->invoice;
+
+        // Το παραστατικό δεν πρέπει να μείνει κολλημένο σε submitting.
+        if ($invoice !== null && $invoice->status === InvoiceStatus::Submitting) {
+            $invoice->transitionTo(InvoiceStatus::Rejected);
+            $invoice->save();
+        }
+
         Log::error('Αποτυχία διαβίβασης myDATA', [
             'submission_id' => $submission->id,
             'invoice_id' => $submission->invoice_id,
             'attempt' => $submission->attempt,
         ]);
+    }
+
+    private function markPermanentFailure(
+        Submission $submission,
+        Invoice $invoice,
+        string $message,
+    ): void {
+        $submission->status = SubmissionStatus::Failed;
+        $submission->errors = [$message];
+        $submission->completed_at = now();
+        $submission->save();
+
+        $invoice->transitionTo(InvoiceStatus::Rejected);
+        $invoice->save();
     }
 }
