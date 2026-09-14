@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\MydataNotConfigured;
 use App\Models\Company;
 use App\Services\Mydata\MydataClient;
 use Illuminate\Http\Client\RequestException;
@@ -88,7 +89,7 @@ it('throws when the company has no credentials', function () {
     $company = Company::factory()->create();
 
     expect(fn () => (new MydataClient)->sendInvoice($company, '<InvoicesDoc/>'))
-        ->toThrow(RuntimeException::class);
+        ->toThrow(MydataNotConfigured::class);
 
     Http::assertNothingSent();
 });

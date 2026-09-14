@@ -7,6 +7,7 @@ export type Company = {
   city: string | null;
   postal_code: string | null;
   created_at: string | null;
+  has_mydata_credentials: boolean;
 };
 
 export type Paginated<T> = {

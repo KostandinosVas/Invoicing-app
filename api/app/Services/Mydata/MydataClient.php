@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Mydata;
 
+use App\Exceptions\MydataNotConfigured;
 use App\Models\Company;
 use Illuminate\Support\Facades\Http;
-use RuntimeException;
 use SimpleXMLElement;
 
 final class MydataClient
@@ -14,9 +14,7 @@ final class MydataClient
     public function sendInvoice(Company $company, string $xml): MydataResponse
     {
         if (! $company->hasMydataCredentials()) {
-            throw new RuntimeException(
-                "Η εταιρεία {$company->id} δεν έχει διαπιστευτήρια myDATA."
-            );
+            throw MydataNotConfigured::forCompany($company->id);
         }
 
         $response = Http::withHeaders([
