@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property string|null $mydata_user_id
  * @property string|null $mydata_subscription_key
+ * @property string $name
+ * @property string $vat_number
  */
 final class Company extends Model
 {

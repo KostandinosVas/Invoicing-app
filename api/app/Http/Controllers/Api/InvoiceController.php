@@ -38,7 +38,7 @@ final class InvoiceController extends Controller
     {
         $this->authorize('view', $invoice);
 
-        return new InvoiceResource($invoice->load('lines'));
+        return new InvoiceResource($invoice->load(['lines', 'submissions']));
     }
 
     public function store(StoreInvoiceRequest $request, CreateInvoice $action): JsonResponse
@@ -47,7 +47,7 @@ final class InvoiceController extends Controller
 
         $invoice = $action->handle($request->validated());
 
-        return (new InvoiceResource($invoice->load('lines')))
+        return (new InvoiceResource($invoice->load(['lines', 'submissions'])))
             ->response()
             ->setStatusCode(201);
     }
@@ -58,7 +58,7 @@ final class InvoiceController extends Controller
 
         $action->handle($invoice);
 
-        return new InvoiceResource($invoice->load('lines'));
+        return new InvoiceResource($invoice->load(['lines', 'submissions']));
     }
 
     public function submit(Invoice $invoice, SubmitInvoice $action): InvoiceResource
@@ -67,6 +67,6 @@ final class InvoiceController extends Controller
 
         $action->handle($invoice);
 
-        return new InvoiceResource($invoice->load('lines'));
+        return new InvoiceResource($invoice->load(['lines', 'submissions']));
     }
 }

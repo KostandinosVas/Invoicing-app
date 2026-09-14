@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useSeries } from '../hooks/useSeries';
 import { useCompanies } from '../hooks/useCompanies';
 import { PageHeader } from '../components/PageHeader';
-import { Button } from '../components/Button';
 import { Select } from '../components/Select';
 import { documentTypeLabels } from '../lib/labels';
 import tableStyles from '../components/Table.module.css';
 import styles from './Customers.module.css';
+import { LinkButton } from '../components/LinkButton';
 
 export function SeriesList() {
   const [companyId, setCompanyId] = useState<number | undefined>(undefined);
@@ -21,11 +20,7 @@ export function SeriesList() {
   const companyName = (id: number) =>
     companies.find((c) => c.id === id)?.name ?? '—';
 
-  const action = (
-    <Link to="/series/new">
-      <Button>Νέα σειρά</Button>
-    </Link>
-  );
+  const action = <LinkButton to="/series/new">Νέα σειρά</LinkButton>;
 
   return (
     <>

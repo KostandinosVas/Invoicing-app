@@ -114,6 +114,30 @@ export function InvoiceShow() {
         </div>
       )}
 
+
+      {invoice.last_submission &&
+        ['rejected', 'failed'].includes(invoice.last_submission.status) && (
+          <div className={styles.errorBox}>
+            <p className={styles.errorTitle}>
+              {invoice.last_submission.status === 'rejected'
+                ? 'Η ΑΑΔΕ απέρριψε τη διαβίβαση'
+                : 'Η διαβίβαση απέτυχε'}
+            </p>
+
+            <ul className={styles.errorList}>
+              {invoice.last_submission.errors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+
+            <p className={styles.errorMeta}>
+              Απόπειρα {invoice.last_submission.attempt}
+              {invoice.last_submission.completed_at &&
+                ` · ${new Date(invoice.last_submission.completed_at).toLocaleString('el-GR')}`}
+            </p>
+          </div>
+        )}
+
       <div className={styles.grid}>
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Γραμμές</h2>
