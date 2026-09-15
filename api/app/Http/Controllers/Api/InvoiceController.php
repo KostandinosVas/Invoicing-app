@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\CreateCreditNote;
 use App\Actions\CreateInvoice;
 use App\Actions\IssueInvoice;
 use App\Actions\SubmitInvoice;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCreditNoteRequest;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
@@ -38,7 +40,7 @@ final class InvoiceController extends Controller
     {
         $this->authorize('view', $invoice);
 
-        return new InvoiceResource($invoice->load(['lines', 'submissions']));
+        return new InvoiceResource($invoice->load(['lines', 'submissions', 'corrections']));
     }
 
     public function store(StoreInvoiceRequest $request, CreateInvoice $action): JsonResponse
@@ -47,7 +49,7 @@ final class InvoiceController extends Controller
 
         $invoice = $action->handle($request->validated());
 
-        return (new InvoiceResource($invoice->load(['lines', 'submissions'])))
+        return (new InvoiceResource($invoice->load(['lines', 'submissions', 'corrections'])))
             ->response()
             ->setStatusCode(201);
     }
@@ -58,7 +60,7 @@ final class InvoiceController extends Controller
 
         $action->handle($invoice);
 
-        return new InvoiceResource($invoice->load(['lines', 'submissions']));
+        return new InvoiceResource($invoice->load(['lines', 'submissions', 'corrections']));
     }
 
     public function submit(Invoice $invoice, SubmitInvoice $action): InvoiceResource
@@ -67,6 +69,20 @@ final class InvoiceController extends Controller
 
         $action->handle($invoice);
 
-        return new InvoiceResource($invoice->load(['lines', 'submissions']));
+        return new InvoiceResource($invoice->load(['lines', 'submissions', 'corrections']));
+    }
+
+    public function storeCreditNote(
+        StoreCreditNoteRequest $request,
+        Invoice $invoice,
+        CreateCreditNote $action,
+    ): JsonResponse {
+        $this->authorize('createCreditNote', $invoice);
+
+        $creditNote = $action->handle($invoice, $request->validated());
+
+        return (new InvoiceResource($creditNote->load(['lines', 'submissions', 'corrections'])))
+            ->response()
+            ->setStatusCode(201);
     }
 }

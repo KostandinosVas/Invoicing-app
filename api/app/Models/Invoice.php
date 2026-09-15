@@ -25,6 +25,8 @@ use Illuminate\Support\Carbon;
  * @property MydataInvoiceType|null $mydata_invoice_type
  * @property int $payment_method
  * @property Carbon|null $mydata_submitted_at
+ * @property int|null $related_invoice_id
+ * @property string $document_type
  */
 final class Invoice extends Model
 {
@@ -119,5 +121,21 @@ final class Invoice extends Model
     public function submissions(): HasMany
     {
         return $this->hasMany(Submission::class)->orderByDesc('attempt');
+    }
+
+    /**
+     * @return BelongsTo<Invoice, $this>
+     */
+    public function relatedInvoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class, 'related_invoice_id');
+    }
+
+    /**
+     * @return HasMany<Invoice, $this>
+     */
+    public function corrections(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'related_invoice_id');
     }
 }

@@ -51,4 +51,12 @@ final class InvoicePolicy
                 InvoiceStatus::Rejected,
             ], true);
     }
+
+    public function createCreditNote(User $user, Invoice $invoice): bool
+    {
+        return $this->view($user, $invoice)
+            && $invoice->document_type === 'invoice'
+            && $invoice->status !== InvoiceStatus::Draft
+            && $invoice->status !== InvoiceStatus::Cancelled;
+    }
 }
