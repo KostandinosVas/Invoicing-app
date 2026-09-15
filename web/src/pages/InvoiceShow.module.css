@@ -70,3 +70,30 @@
   font-size: var(--text-sm);
   margin-top: var(--space-3);
 }
+
+.errorBox {
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.errorTitle {
+  font-weight: 600;
+  color: var(--color-danger);
+  margin-bottom: var(--space-2);
+}
+
+.errorList {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.errorMeta {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}

@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useItems } from '../hooks/useItems';
 import { useCompanies } from '../hooks/useCompanies';
 import { PageHeader } from '../components/PageHeader';
-import { Button } from '../components/Button';
 import { Select } from '../components/Select';
 import { formatCents } from '../lib/money';
 import tableStyles from '../components/Table.module.css';
 import styles from './Customers.module.css';
+import { LinkButton } from '../components/LinkButton';
 
 export function Items() {
   const [companyId, setCompanyId] = useState<number | undefined>(undefined);
@@ -21,11 +20,7 @@ export function Items() {
   const companyName = (id: number) =>
     companies.find((c) => c.id === id)?.name ?? '—';
 
-  const action = (
-    <Link to="/items/new">
-      <Button>Νέο είδος</Button>
-    </Link>
-  );
+  const action = <LinkButton to="/items/new">Νέο είδος</LinkButton>;
 
   return (
     <>

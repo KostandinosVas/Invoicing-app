@@ -46,6 +46,17 @@ final class InvoiceResource extends JsonResource
 
             'mydata_mark' => $this->mydata_mark,
 
+            'last_submission' => $this->whenLoaded('submissions', function () {
+                $submission = $this->submissions->first();
+
+                return $submission === null ? null : [
+                    'status' => $submission->status->value,
+                    'attempt' => $submission->attempt,
+                    'errors' => $submission->errors ?? [],
+                    'completed_at' => $submission->completed_at?->toIso8601String(),
+                ];
+            }),
+
             'lines' => InvoiceLineResource::collection($this->whenLoaded('lines')),
         ];
     }

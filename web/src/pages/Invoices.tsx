@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useInvoices } from '../hooks/useInvoices';
 import { useCompanies } from '../hooks/useCompanies';
 import { PageHeader } from '../components/PageHeader';
-import { Button } from '../components/Button';
 import { Select } from '../components/Select';
 import { StatusBadge } from '../components/StatusBadge';
 import { formatCents } from '../lib/money';
@@ -11,6 +9,7 @@ import { documentTypeLabels } from '../lib/labels';
 import type { InvoiceStatus } from '../types/api';
 import tableStyles from '../components/Table.module.css';
 import styles from './Customers.module.css';
+import { LinkButton } from '../components/LinkButton';
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Προσχέδιο' },
@@ -34,11 +33,7 @@ export function Invoices() {
   const companyName = (id: number) =>
     companies.find((c) => c.id === id)?.name ?? '—';
 
-  const action = (
-    <Link to="/invoices/new">
-      <Button>Νέο παραστατικό</Button>
-    </Link>
-  );
+  const action = <LinkButton to="/invoices/new">Νέο παραστατικό</LinkButton>;
 
   return (
     <>
@@ -111,11 +106,13 @@ export function Invoices() {
                     <StatusBadge status={invoice.status} />
                   </td>
                   <td>
-                    <Link to={`/invoices/${invoice.id}`}>
-                      <Button variant="secondary" size="small">
-                        Άνοιγμα
-                      </Button>
-                    </Link>
+                    <LinkButton
+                      to={`/invoices/${invoice.id}`}
+                      variant="secondary"
+                      size="small"
+                    >
+                      Άνοιγμα
+                    </LinkButton>
                   </td>
                 </tr>
               ))}

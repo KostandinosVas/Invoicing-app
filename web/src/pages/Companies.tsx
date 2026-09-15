@@ -3,15 +3,12 @@ import { useCompanies } from '../hooks/useCompanies';
 import { PageHeader } from '../components/PageHeader';
 import { Button } from '../components/Button';
 import tableStyles from '../components/Table.module.css';
+import { LinkButton } from '../components/LinkButton';
 
 export function Companies() {
   const { data, isLoading, isError } = useCompanies();
 
-  const action = (
-    <Link to="/companies/new">
-      <Button>Νέα εταιρεία</Button>
-    </Link>
-  );
+  const action = <LinkButton to="/companies/new">Νέα εταιρεία</LinkButton>;
 
   if (isLoading) {
     return (
@@ -37,7 +34,7 @@ export function Companies() {
     <>
       <PageHeader
         title="Εταιρείες"
-        subtitle={`${companies.length} εγγραφές`}
+        subtitle={`${data?.meta.total ?? 0} εγγραφές`}
         action={action}
       />
 

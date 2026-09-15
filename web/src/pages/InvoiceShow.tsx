@@ -54,10 +54,10 @@ export function InvoiceShow() {
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 403) {
         setSubmitError('Το παραστατικό δεν μπορεί να διαβιβαστεί στην τρέχουσα κατάσταση.');
-      } else if (isAxiosError(error) && error.response?.status === 500) {
-        setSubmitError('Η εταιρεία δεν έχει διαπιστευτήρια myDATA.');
+      } else if (isAxiosError(error) && error.response?.status === 422) {
+        setSubmitError('Υπάρχει ήδη απόπειρα διαβίβασης σε εξέλιξη.');
       } else {
-        setSubmitError('Η διαβίβαση απέτυχε. Δοκιμάστε ξανά.');
+        setSubmitError('Η διαβίβαση δεν ξεκίνησε. Δοκιμάστε ξανά.');
       }
     }
   }
@@ -113,6 +113,30 @@ export function InvoiceShow() {
           καθυστερήσει — ανανεώστε τη σελίδα σε λίγο.
         </div>
       )}
+
+
+      {invoice.last_submission &&
+        ['rejected', 'failed'].includes(invoice.last_submission.status) && (
+          <div className={styles.errorBox}>
+            <p className={styles.errorTitle}>
+              {invoice.last_submission.status === 'rejected'
+                ? 'Η ΑΑΔΕ απέρριψε τη διαβίβαση'
+                : 'Η διαβίβαση απέτυχε'}
+            </p>
+
+            <ul className={styles.errorList}>
+              {invoice.last_submission.errors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+
+            <p className={styles.errorMeta}>
+              Απόπειρα {invoice.last_submission.attempt}
+              {invoice.last_submission.completed_at &&
+                ` · ${new Date(invoice.last_submission.completed_at).toLocaleString('el-GR')}`}
+            </p>
+          </div>
+        )}
 
       <div className={styles.grid}>
         <section className={styles.card}>

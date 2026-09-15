@@ -12,10 +12,12 @@ use DomainException;
  */
 final class MydataNotConfigured extends DomainException
 {
-    public static function forCompany(int $companyId): self
+    public static function forCompany(?string $companyName): self
     {
+        $name = $companyName ?? 'άγνωστη';
+
         return new self(
-            "Η εταιρεία {$companyId} δεν έχει διαπιστευτήρια myDATA."
+            "Η εταιρεία «{$name}» δεν έχει καταχωρημένα διαπιστευτήρια myDATA."
         );
     }
 }

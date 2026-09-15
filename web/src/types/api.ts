@@ -100,5 +100,13 @@ export type Invoice = {
     total_cents: number;
   };
   mydata_mark: string | null;
+
+  last_submission?: {
+    status: 'pending' | 'sent' | 'accepted' | 'rejected' | 'failed';
+    attempt: number;
+    errors: string[];
+    completed_at: string | null;
+  } | null;
+
   lines?: InvoiceLine[];
 };

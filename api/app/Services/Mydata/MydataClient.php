@@ -14,7 +14,7 @@ final class MydataClient
     public function sendInvoice(Company $company, string $xml): MydataResponse
     {
         if (! $company->hasMydataCredentials()) {
-            throw MydataNotConfigured::forCompany($company->id);
+            throw MydataNotConfigured::forCompany($company->name);
         }
 
         $response = Http::withHeaders([
