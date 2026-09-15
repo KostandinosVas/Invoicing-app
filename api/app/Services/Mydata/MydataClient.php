@@ -67,4 +67,43 @@ final class MydataClient
 
         return $errors === [] ? ['Απόρριψη χωρίς λεπτομέρειες.'] : $errors;
     }
+
+    public function cancelInvoice(Company $company, string $mark): MydataResponse
+    {
+        if (! $company->hasMydataCredentials()) {
+            throw MydataNotConfigured::forCompany($company->name);
+        }
+
+        $response = Http::withHeaders([
+            'aade-user-id' => (string) $company->mydata_user_id,
+            'ocp-apim-subscription-key' => (string) $company->mydata_subscription_key,
+        ])
+            ->timeout((int) config('mydata.timeout'))
+            ->post(config('mydata.base_url').'/CancelInvoice?mark='.urlencode($mark));
+
+        $response->throw();
+
+        return $this->parseCancellation($response->body());
+    }
+
+    private function parseCancellation(string $body): MydataResponse
+    {
+        $xml = new SimpleXMLElement($body);
+
+        $item = $xml->response[0] ?? null;
+
+        if ($item === null) {
+            return MydataResponse::rejected(['Κενή απάντηση από την ΑΑΔΕ.']);
+        }
+
+        if ((string) $item->statusCode !== 'Success') {
+            return MydataResponse::rejected($this->extractErrors($item));
+        }
+
+        return MydataResponse::accepted(
+            (string) $item->cancellationMark,
+            null,
+            null,
+        );
+    }
 }

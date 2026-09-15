@@ -59,4 +59,11 @@ final class InvoicePolicy
             && $invoice->status !== InvoiceStatus::Draft
             && $invoice->status !== InvoiceStatus::Cancelled;
     }
+
+    public function cancel(User $user, Invoice $invoice): bool
+    {
+        return $this->view($user, $invoice)
+            && $invoice->status === InvoiceStatus::Submitted
+            && $invoice->mydata_mark !== null;
+    }
 }

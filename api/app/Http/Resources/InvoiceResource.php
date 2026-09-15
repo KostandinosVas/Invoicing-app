@@ -70,6 +70,9 @@ final class InvoiceResource extends JsonResource
                     'status' => $correction->status->value,
                 ],
             )),
+
+            'mydata_cancellation_mark' => $this->mydata_cancellation_mark,
+            'cancelled_at' => $this->cancelled_at?->toIso8601String(),
         ];
     }
 }
