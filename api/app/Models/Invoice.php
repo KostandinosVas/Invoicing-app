@@ -27,6 +27,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $mydata_submitted_at
  * @property int|null $related_invoice_id
  * @property string $document_type
+ * @property string|null $mydata_cancellation_mark
+ * @property Carbon|null $cancelled_at
  */
 final class Invoice extends Model
 {
@@ -70,6 +72,7 @@ final class Invoice extends Model
             'mydata_submitted_at' => 'datetime',
             'mydata_invoice_type' => MydataInvoiceType::class,
             'payment_method' => 'integer',
+            'cancelled_at' => 'datetime',
         ];
     }
 

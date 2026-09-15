@@ -12,6 +12,7 @@ import { documentTypeLabels } from '../lib/labels';
 import tableStyles from '../components/Table.module.css';
 import styles from './InvoiceShow.module.css';
 import { LinkButton } from '../components/LinkButton';
+import { useCancelInvoice } from '../hooks/useCancelInvoice';
 
 export function InvoiceShow() {
   const { id } = useParams<{ id: string }>();
@@ -21,8 +22,11 @@ export function InvoiceShow() {
   const { data: invoice, isLoading, isError } = useInvoice(invoiceId);
   const issueInvoice = useIssueInvoice();
   const submitInvoice = useSubmitInvoice();
+  const cancelInvoice = useCancelInvoice();
+  const [cancelError, setCancelError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [issueError, setIssueError] = useState<string | null>(null);
+  const [cancelStarted, setCancelStarted] = useState(false);
 
   if (isLoading) return <p>Φόρτωση…</p>;
 
@@ -63,12 +67,31 @@ export function InvoiceShow() {
     }
   }
 
+    async function handleCancel() {
+    if (!window.confirm(
+      'Η ακύρωση διαβιβάζεται στην ΑΑΔΕ και δεν αναιρείται. Συνέχεια;'
+    )) {
+      return;
+    }
+
+    setCancelError(null);
+
+    try {
+      await cancelInvoice.mutateAsync(invoiceId);
+      setCancelStarted(true);
+    } catch {
+      setCancelError('Η ακύρωση δεν ξεκίνησε. Δοκιμάστε ξανά.');
+    }
+  }
+
   const canSubmit = invoice.status === 'issued' || invoice.status === 'rejected';
 
     const canCreateCreditNote =
     invoice.document_type === 'invoice' &&
     invoice.status !== 'draft' &&
     invoice.status !== 'cancelled';
+
+  const canCancel = invoice.status === 'submitted';
 
   const title = invoice.number
     ? `${documentTypeLabels[invoice.document_type]} #${invoice.number}`
@@ -109,6 +132,12 @@ export function InvoiceShow() {
                 Έκδοση πιστωτικού
               </LinkButton>
             )}
+
+            {canCancel && (
+              <Button variant="danger" onClick={handleCancel} disabled={cancelInvoice.isPending}>
+                {cancelInvoice.isPending ? 'Ακύρωση…' : 'Ακύρωση στο myDATA'}
+              </Button>
+            )}
           </div>
 
           
@@ -127,6 +156,15 @@ export function InvoiceShow() {
 
       {submitError && <p className={styles.error}>{submitError}</p>}
 
+      {cancelError && <p className={styles.error}>{cancelError}</p>}
+
+            {cancelStarted && invoice.status !== 'cancelled' && (
+        <div className={styles.warning}>
+          Η ακύρωση στάλθηκε στην ΑΑΔΕ. Η επιβεβαίωση ενδέχεται να καθυστερήσει —
+          ανανεώστε τη σελίδα σε λίγο.
+        </div>
+      )}
+
       {invoice.status === 'submitting' && (
         <div className={styles.warning}>
           Η διαβίβαση βρίσκεται σε εξέλιξη. Η απάντηση της ΑΑΔΕ ενδέχεται να
@@ -135,7 +173,8 @@ export function InvoiceShow() {
       )}
 
 
-      {invoice.last_submission &&
+      {!invoice.mydata_mark &&
+        invoice.last_submission &&
         ['rejected', 'failed'].includes(invoice.last_submission.status) && (
           <div className={styles.errorBox}>
             <p className={styles.errorTitle}>
@@ -234,6 +273,15 @@ export function InvoiceShow() {
               <span>{invoice.issue_date ?? '—'}</span>
 
               <span className={styles.metaLabel}>ΜΑΡΚ</span>
+
+              {invoice.mydata_cancellation_mark && (
+                <>
+                  <span className={styles.metaLabel}>Αρ. ακύρωσης</span>
+                  <span className={tableStyles.numeric}>
+                    {invoice.mydata_cancellation_mark}
+                  </span>
+                </>
+              )}
               <span className={tableStyles.numeric}>
                 {invoice.mydata_mark ?? '—'}
               </span>

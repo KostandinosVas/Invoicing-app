@@ -118,4 +118,7 @@ export type Invoice = {
     total_cents: number;
     status: InvoiceStatus;
   }>;
+
+  mydata_cancellation_mark: string | null;
+  cancelled_at: string | null;
 };

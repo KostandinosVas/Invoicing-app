@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\CancelInvoice;
 use App\Actions\CreateCreditNote;
 use App\Actions\CreateInvoice;
 use App\Actions\IssueInvoice;
@@ -84,5 +85,16 @@ final class InvoiceController extends Controller
         return (new InvoiceResource($creditNote->load(['lines', 'submissions', 'corrections'])))
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function cancel(Invoice $invoice, CancelInvoice $action): InvoiceResource
+    {
+        $this->authorize('cancel', $invoice);
+
+        $action->handle($invoice);
+
+        return new InvoiceResource(
+            $invoice->fresh()?->load(['lines', 'submissions', 'corrections'])
+        );
     }
 }
