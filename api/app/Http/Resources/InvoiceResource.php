@@ -58,6 +58,18 @@ final class InvoiceResource extends JsonResource
             }),
 
             'lines' => InvoiceLineResource::collection($this->whenLoaded('lines')),
+
+            'related_invoice_id' => $this->related_invoice_id,
+
+            'corrections' => $this->whenLoaded('corrections', fn () => $this->corrections->map(
+                fn (Invoice $correction): array => [
+                    'id' => $correction->id,
+                    'document_type' => $correction->document_type,
+                    'number' => $correction->number,
+                    'total_cents' => $correction->total_cents,
+                    'status' => $correction->status->value,
+                ],
+            )),
         ];
     }
 }
