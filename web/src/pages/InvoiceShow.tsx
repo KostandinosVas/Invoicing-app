@@ -11,6 +11,7 @@ import { formatCents } from '../lib/money';
 import { documentTypeLabels } from '../lib/labels';
 import tableStyles from '../components/Table.module.css';
 import styles from './InvoiceShow.module.css';
+import { LinkButton } from '../components/LinkButton';
 
 export function InvoiceShow() {
   const { id } = useParams<{ id: string }>();
@@ -64,6 +65,11 @@ export function InvoiceShow() {
 
   const canSubmit = invoice.status === 'issued' || invoice.status === 'rejected';
 
+    const canCreateCreditNote =
+    invoice.document_type === 'invoice' &&
+    invoice.status !== 'draft' &&
+    invoice.status !== 'cancelled';
+
   const title = invoice.number
     ? `${documentTypeLabels[invoice.document_type]} #${invoice.number}`
     : `${documentTypeLabels[invoice.document_type]} (προσχέδιο)`;
@@ -72,6 +78,11 @@ export function InvoiceShow() {
     <>
       <PageHeader
         title={title}
+        subtitle={
+          invoice.related_invoice_id
+            ? `Διόρθωση του παραστατικού #${invoice.related_invoice_id}`
+            : undefined
+        }
         action={
           <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
             <Button variant="secondary" onClick={() => navigate('/invoices')}>
@@ -89,6 +100,15 @@ export function InvoiceShow() {
                 {submitInvoice.isPending ? 'Διαβίβαση…' : 'Διαβίβαση στο myDATA'}
               </Button>
             )}
+
+            {canCreateCreditNote && (
+              <LinkButton
+                to={`/invoices/${invoiceId}/credit-notes/new`}
+                variant="secondary"
+              >
+                Έκδοση πιστωτικού
+              </LinkButton>
+            )}
           </div>
 
           
@@ -97,9 +117,9 @@ export function InvoiceShow() {
 
       {isDraft && (
         <div className={styles.warning}>
-          Μετά την έκδοση το παραστατικό παίρνει αριθμό και δεν μπορεί να
-          τροποποιηθεί ή να διαγραφεί. Διορθώσεις γίνονται μόνο με πιστωτικό ή
-          ακυρωτικό.
+          {invoice.document_type === 'credit_note'
+            ? 'Μετά την έκδοση το πιστωτικό παίρνει αριθμό και δεν μπορεί να τροποποιηθεί ή να διαγραφεί.'
+            : 'Μετά την έκδοση το παραστατικό παίρνει αριθμό και δεν μπορεί να τροποποιηθεί ή να διαγραφεί. Διορθώσεις γίνονται μόνο με πιστωτικό ή ακυρωτικό.'}
         </div>
       )}
 
@@ -197,7 +217,7 @@ export function InvoiceShow() {
           </div>
         </section>
 
-        <aside>
+                <aside>
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>Στοιχεία</h2>
 
@@ -219,6 +239,49 @@ export function InvoiceShow() {
               </span>
             </div>
           </section>
+
+          {invoice.related_invoice_id && (
+            <section className={styles.card} style={{ marginTop: 'var(--space-4)' }}>
+              <h2 className={styles.cardTitle}>Αναφέρεται σε</h2>
+
+              <LinkButton
+                to={`/invoices/${invoice.related_invoice_id}`}
+                variant="secondary"
+                size="small"
+              >
+                Άνοιγμα αρχικού παραστατικού
+              </LinkButton>
+            </section>
+          )}
+
+          {invoice.corrections && invoice.corrections.length > 0 && (
+            <section className={styles.card} style={{ marginTop: 'var(--space-4)' }}>
+              <h2 className={styles.cardTitle}>Διορθώσεις</h2>
+
+              <div className={styles.corrections}>
+                {invoice.corrections.map((correction) => (
+                  <div key={correction.id} className={styles.correctionRow}>
+                    <span>
+                      {documentTypeLabels[correction.document_type]}
+                      {correction.number ? ` #${correction.number}` : ' (προσχέδιο)'}
+                    </span>
+
+                    <span className={tableStyles.numeric}>
+                      {formatCents(correction.total_cents)}
+                    </span>
+
+                    <LinkButton
+                      to={`/invoices/${correction.id}`}
+                      variant="secondary"
+                      size="small"
+                    >
+                      Άνοιγμα
+                    </LinkButton>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className={styles.card} style={{ marginTop: 'var(--space-4)' }}>
             <h2 className={styles.cardTitle}>Πελάτης</h2>

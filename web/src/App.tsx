@@ -14,6 +14,7 @@ import { SeriesCreate } from './pages/SeriesCreate';
 import { InvoiceCreate } from './pages/InvoiceCreate';
 import { Invoices } from './pages/Invoices';
 import { InvoiceShow } from './pages/InvoiceShow';
+import { CreditNoteCreate } from './pages/CreditNoteCreate';
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/invoices/new" element={<InvoiceCreate />} />
               <Route path="/invoices/:id" element={<InvoiceShow />} />
+              <Route path="/invoices/:id/credit-notes/new" element={<CreditNoteCreate />} />
             </Route>
           </Route>
 

@@ -109,4 +109,13 @@ export type Invoice = {
   } | null;
 
   lines?: InvoiceLine[];
+
+  related_invoice_id?: number | null;
+  corrections?: Array<{
+    id: number;
+    document_type: DocumentType;
+    number: number | null;
+    total_cents: number;
+    status: InvoiceStatus;
+  }>;
 };
