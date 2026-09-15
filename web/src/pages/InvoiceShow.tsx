@@ -54,10 +54,10 @@ export function InvoiceShow() {
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 403) {
         setSubmitError('Το παραστατικό δεν μπορεί να διαβιβαστεί στην τρέχουσα κατάσταση.');
-      } else if (isAxiosError(error) && error.response?.status === 500) {
-        setSubmitError('Η εταιρεία δεν έχει διαπιστευτήρια myDATA.');
+      } else if (isAxiosError(error) && error.response?.status === 422) {
+        setSubmitError('Υπάρχει ήδη απόπειρα διαβίβασης σε εξέλιξη.');
       } else {
-        setSubmitError('Η διαβίβαση απέτυχε. Δοκιμάστε ξανά.');
+        setSubmitError('Η διαβίβαση δεν ξεκίνησε. Δοκιμάστε ξανά.');
       }
     }
   }
