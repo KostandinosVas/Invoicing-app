@@ -66,4 +66,9 @@ final class InvoicePolicy
             && $invoice->status === InvoiceStatus::Submitted
             && $invoice->mydata_mark !== null;
     }
+
+    public function email(User $user, Invoice $invoice): bool
+    {
+        return $this->view($user, $invoice) && $invoice->number !== null;
+    }
 }

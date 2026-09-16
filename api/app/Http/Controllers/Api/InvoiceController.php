@@ -8,15 +8,19 @@ use App\Actions\CancelInvoice;
 use App\Actions\CreateCreditNote;
 use App\Actions\CreateInvoice;
 use App\Actions\IssueInvoice;
+use App\Actions\SendInvoiceEmail;
 use App\Actions\SubmitInvoice;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SendInvoiceEmailRequest;
 use App\Http\Requests\StoreCreditNoteRequest;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
+use App\Services\InvoicePdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 final class InvoiceController extends Controller
 {
@@ -96,5 +100,24 @@ final class InvoiceController extends Controller
         return new InvoiceResource(
             $invoice->fresh()?->load(['lines', 'submissions', 'corrections'])
         );
+    }
+
+    public function pdf(Invoice $invoice, InvoicePdf $pdf): Response
+    {
+        $this->authorize('view', $invoice);
+
+        return $pdf->render($invoice)->download($pdf->filename($invoice));
+    }
+
+    public function email(
+        SendInvoiceEmailRequest $request,
+        Invoice $invoice,
+        SendInvoiceEmail $action,
+    ): JsonResponse {
+        $this->authorize('email', $invoice);
+
+        $action->handle($invoice, $request->string('email')->toString());
+
+        return response()->json(['message' => 'Το παραστατικό στάλθηκε.']);
     }
 }
