@@ -13,6 +13,7 @@ import tableStyles from '../components/Table.module.css';
 import styles from './InvoiceShow.module.css';
 import { LinkButton } from '../components/LinkButton';
 import { useCancelInvoice } from '../hooks/useCancelInvoice';
+import { useEmailInvoice } from '../hooks/useEmailInvoice';
 
 export function InvoiceShow() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,8 @@ export function InvoiceShow() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [issueError, setIssueError] = useState<string | null>(null);
   const [cancelStarted, setCancelStarted] = useState(false);
+  const emailInvoice = useEmailInvoice();
+  const [emailMessage, setEmailMessage] = useState<string | null>(null);
 
   if (isLoading) return <p>Φόρτωση…</p>;
 
@@ -67,7 +70,7 @@ export function InvoiceShow() {
     }
   }
 
-    async function handleCancel() {
+  async function handleCancel() {
     if (!window.confirm(
       'Η ακύρωση διαβιβάζεται στην ΑΑΔΕ και δεν αναιρείται. Συνέχεια;'
     )) {
@@ -81,6 +84,21 @@ export function InvoiceShow() {
       setCancelStarted(true);
     } catch {
       setCancelError('Η ακύρωση δεν ξεκίνησε. Δοκιμάστε ξανά.');
+    }
+  }
+
+    async function handleEmail() {
+    const email = window.prompt('Διεύθυνση αποστολής:');
+
+    if (!email) return;
+
+    setEmailMessage(null);
+
+    try {
+      await emailInvoice.mutateAsync({ id: invoiceId, email });
+      setEmailMessage(`Το παραστατικό στάλθηκε στο ${email}.`);
+    } catch {
+      setEmailMessage('Η αποστολή απέτυχε.');
     }
   }
 
@@ -108,6 +126,24 @@ export function InvoiceShow() {
         }
         action={
           <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                window.open(
+                  `${import.meta.env.VITE_API_URL ?? 'http://localhost:8000'}/api/invoices/${invoiceId}/pdf`,
+                  '_blank',
+                );
+              }}
+            >
+              PDF
+            </Button>
+
+            {invoice.number && (
+              <Button variant="secondary" onClick={handleEmail} disabled={emailInvoice.isPending}>
+                {emailInvoice.isPending ? 'Αποστολή…' : 'Email'}
+              </Button>
+            )}
+
             <Button variant="secondary" onClick={() => navigate('/invoices')}>
               Πίσω
             </Button>
@@ -157,6 +193,8 @@ export function InvoiceShow() {
       {submitError && <p className={styles.error}>{submitError}</p>}
 
       {cancelError && <p className={styles.error}>{cancelError}</p>}
+
+            {emailMessage && <p className={styles.error}>{emailMessage}</p>}
 
             {cancelStarted && invoice.status !== 'cancelled' && (
         <div className={styles.warning}>
