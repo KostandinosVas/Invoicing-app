@@ -1,34 +1,38 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSubmitInvoice } from '../hooks/useSubmitInvoice';
 import { isAxiosError } from 'axios';
 import { useInvoice } from '../hooks/useInvoices';
 import { useIssueInvoice } from '../hooks/useIssueInvoice';
+import { useSubmitInvoice } from '../hooks/useSubmitInvoice';
+import { useCancelInvoice } from '../hooks/useCancelInvoice';
+import { useEmailInvoice } from '../hooks/useEmailInvoice';
+import { useAuth } from '../auth/AuthContext';
 import { PageHeader } from '../components/PageHeader';
 import { Button } from '../components/Button';
+import { LinkButton } from '../components/LinkButton';
 import { StatusBadge } from '../components/StatusBadge';
 import { formatCents } from '../lib/money';
 import { documentTypeLabels } from '../lib/labels';
 import tableStyles from '../components/Table.module.css';
 import styles from './InvoiceShow.module.css';
-import { LinkButton } from '../components/LinkButton';
-import { useCancelInvoice } from '../hooks/useCancelInvoice';
-import { useEmailInvoice } from '../hooks/useEmailInvoice';
 
 export function InvoiceShow() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const invoiceId = Number(id);
 
+  const { user } = useAuth();
   const { data: invoice, isLoading, isError } = useInvoice(invoiceId);
+
   const issueInvoice = useIssueInvoice();
   const submitInvoice = useSubmitInvoice();
   const cancelInvoice = useCancelInvoice();
-  const [cancelError, setCancelError] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [issueError, setIssueError] = useState<string | null>(null);
-  const [cancelStarted, setCancelStarted] = useState(false);
   const emailInvoice = useEmailInvoice();
+
+  const [issueError, setIssueError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [cancelStarted, setCancelStarted] = useState(false);
   const [emailMessage, setEmailMessage] = useState<string | null>(null);
 
   if (isLoading) return <p>Φόρτωση…</p>;
@@ -37,7 +41,21 @@ export function InvoiceShow() {
     return <p>Το παραστατικό δεν βρέθηκε.</p>;
   }
 
+  const canWrite = user?.can_write ?? false;
   const isDraft = invoice.status === 'draft';
+
+  const canIssue = canWrite && isDraft;
+
+  const canSubmit =
+    canWrite && (invoice.status === 'issued' || invoice.status === 'rejected');
+
+  const canCancel = canWrite && invoice.status === 'submitted';
+
+  const canCreateCreditNote =
+    canWrite &&
+    invoice.document_type === 'invoice' &&
+    invoice.status !== 'draft' &&
+    invoice.status !== 'cancelled';
 
   async function handleIssue() {
     setIssueError(null);
@@ -52,7 +70,6 @@ export function InvoiceShow() {
       }
     }
   }
-
 
   async function handleSubmit() {
     setSubmitError(null);
@@ -71,9 +88,9 @@ export function InvoiceShow() {
   }
 
   async function handleCancel() {
-    if (!window.confirm(
-      'Η ακύρωση διαβιβάζεται στην ΑΑΔΕ και δεν αναιρείται. Συνέχεια;'
-    )) {
+    if (
+      !window.confirm('Η ακύρωση διαβιβάζεται στην ΑΑΔΕ και δεν αναιρείται. Συνέχεια;')
+    ) {
       return;
     }
 
@@ -87,7 +104,7 @@ export function InvoiceShow() {
     }
   }
 
-    async function handleEmail() {
+  async function handleEmail() {
     const email = window.prompt('Διεύθυνση αποστολής:');
 
     if (!email) return;
@@ -102,15 +119,6 @@ export function InvoiceShow() {
     }
   }
 
-  const canSubmit = invoice.status === 'issued' || invoice.status === 'rejected';
-
-    const canCreateCreditNote =
-    invoice.document_type === 'invoice' &&
-    invoice.status !== 'draft' &&
-    invoice.status !== 'cancelled';
-
-  const canCancel = invoice.status === 'submitted';
-
   const title = invoice.number
     ? `${documentTypeLabels[invoice.document_type]} #${invoice.number}`
     : `${documentTypeLabels[invoice.document_type]} (προσχέδιο)`;
@@ -119,11 +127,6 @@ export function InvoiceShow() {
     <>
       <PageHeader
         title={title}
-        subtitle={
-          invoice.related_invoice_id
-            ? `Διόρθωση του παραστατικού #${invoice.related_invoice_id}`
-            : undefined
-        }
         action={
           <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
             <Button
@@ -139,7 +142,11 @@ export function InvoiceShow() {
             </Button>
 
             {invoice.number && (
-              <Button variant="secondary" onClick={handleEmail} disabled={emailInvoice.isPending}>
+              <Button
+                variant="secondary"
+                onClick={handleEmail}
+                disabled={emailInvoice.isPending}
+              >
                 {emailInvoice.isPending ? 'Αποστολή…' : 'Email'}
               </Button>
             )}
@@ -148,7 +155,7 @@ export function InvoiceShow() {
               Πίσω
             </Button>
 
-            {isDraft && (
+            {canIssue && (
               <Button onClick={handleIssue} disabled={issueInvoice.isPending}>
                 {issueInvoice.isPending ? 'Έκδοση…' : 'Έκδοση'}
               </Button>
@@ -170,13 +177,15 @@ export function InvoiceShow() {
             )}
 
             {canCancel && (
-              <Button variant="danger" onClick={handleCancel} disabled={cancelInvoice.isPending}>
+              <Button
+                variant="danger"
+                onClick={handleCancel}
+                disabled={cancelInvoice.isPending}
+              >
                 {cancelInvoice.isPending ? 'Ακύρωση…' : 'Ακύρωση στο myDATA'}
               </Button>
             )}
           </div>
-
-          
         }
       />
 
@@ -184,7 +193,7 @@ export function InvoiceShow() {
         <div className={styles.warning}>
           {invoice.document_type === 'credit_note'
             ? 'Μετά την έκδοση το πιστωτικό παίρνει αριθμό και δεν μπορεί να τροποποιηθεί ή να διαγραφεί.'
-            : 'Μετά την έκδοση το παραστατικό παίρνει αριθμό και δεν μπορεί να τροποποιηθεί ή να διαγραφεί. Διορθώσεις γίνονται μόνο με πιστωτικό ή ακυρωτικό.'}
+            : 'Μετά την έκδοση το παραστατικό παίρνει αριθμό και δεν μπορεί να τροποποιηθεί ή να διαγραφεί. Διορθώσεις γίνονται μόνο με πιστωτικό.'}
         </div>
       )}
 
@@ -194,9 +203,9 @@ export function InvoiceShow() {
 
       {cancelError && <p className={styles.error}>{cancelError}</p>}
 
-            {emailMessage && <p className={styles.error}>{emailMessage}</p>}
+      {emailMessage && <p className={styles.error}>{emailMessage}</p>}
 
-            {cancelStarted && invoice.status !== 'cancelled' && (
+      {cancelStarted && invoice.status !== 'cancelled' && (
         <div className={styles.warning}>
           Η ακύρωση στάλθηκε στην ΑΑΔΕ. Η επιβεβαίωση ενδέχεται να καθυστερήσει —
           ανανεώστε τη σελίδα σε λίγο.
@@ -209,7 +218,6 @@ export function InvoiceShow() {
           καθυστερήσει — ανανεώστε τη σελίδα σε λίγο.
         </div>
       )}
-
 
       {!invoice.mydata_mark &&
         invoice.last_submission &&
@@ -294,7 +302,7 @@ export function InvoiceShow() {
           </div>
         </section>
 
-                <aside>
+        <aside>
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>Στοιχεία</h2>
 
@@ -311,6 +319,9 @@ export function InvoiceShow() {
               <span>{invoice.issue_date ?? '—'}</span>
 
               <span className={styles.metaLabel}>ΜΑΡΚ</span>
+              <span className={tableStyles.numeric}>
+                {invoice.mydata_mark ?? '—'}
+              </span>
 
               {invoice.mydata_cancellation_mark && (
                 <>
@@ -320,9 +331,6 @@ export function InvoiceShow() {
                   </span>
                 </>
               )}
-              <span className={tableStyles.numeric}>
-                {invoice.mydata_mark ?? '—'}
-              </span>
             </div>
           </section>
 

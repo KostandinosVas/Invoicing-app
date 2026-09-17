@@ -67,7 +67,7 @@ function creditNotePayload(int $seriesId): array
 
 it('creates a credit note linked to the original', function () {
     [, $invoice, $creditSeries] = invoiceWithCreditSeries();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $response = test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/credit-notes", creditNotePayload($creditSeries->id))
@@ -84,7 +84,7 @@ it('creates a credit note linked to the original', function () {
 
 it('copies the snapshot from the original, not from the customer', function () {
     [, $invoice, $creditSeries, $customer] = invoiceWithCreditSeries();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     // Ο πελάτης αλλάζει επωνυμία μετά την έκδοση.
     $customer->update(['name' => 'Νέα Επωνυμία']);
@@ -107,7 +107,7 @@ it('rejects a credit note for a draft invoice', function () {
 
     $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/credit-notes", creditNotePayload($creditSeries->id))
@@ -123,7 +123,7 @@ it('rejects a series of the wrong document type', function () {
         'document_type' => 'invoice',
     ]);
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/credit-notes", creditNotePayload($wrongSeries->id))
@@ -133,7 +133,7 @@ it('rejects a series of the wrong document type', function () {
 
 it('issues a credit note from its own series', function () {
     [, $invoice, $creditSeries] = invoiceWithCreditSeries();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $creditNoteId = test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/credit-notes", creditNotePayload($creditSeries->id))

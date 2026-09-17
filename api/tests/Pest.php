@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use App\Enums\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Pest\TestSuite;
 use Tests\TestCase;
@@ -24,6 +25,11 @@ function test_case(): TestCase
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    ->beforeEach(function (): void {
+        foreach (Role::cases() as $role) {
+            Spatie\Permission\Models\Role::findOrCreate($role->value, 'web');
+        }
+    })
     ->in('Feature');
 
 /*

@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property InvoiceStatus $status
@@ -33,7 +35,7 @@ use Illuminate\Support\Carbon;
 final class Invoice extends Model
 {
     /** @use HasFactory<InvoiceFactory> */
-    use BelongsToCompany, HasFactory;
+    use BelongsToCompany, HasFactory, LogsActivity;
 
     /** @var list<string> */
     protected $fillable = [
@@ -140,5 +142,20 @@ final class Invoice extends Model
     public function corrections(): HasMany
     {
         return $this->hasMany(Invoice::class, 'related_invoice_id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'status',
+                'number',
+                'mydata_mark',
+                'mydata_cancellation_mark',
+                'total_cents',
+            ])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->useLogName('invoice');
     }
 }

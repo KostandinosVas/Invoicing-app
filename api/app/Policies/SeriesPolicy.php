@@ -21,12 +21,12 @@ final class SeriesPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->canWrite();
     }
 
     public function update(User $user, Series $series): bool
     {
-        return $this->view($user, $series);
+        return $user->canWrite() && $this->view($user, $series);
     }
 
     public function delete(User $user, Series $series): bool

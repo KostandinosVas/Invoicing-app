@@ -43,7 +43,7 @@ it('does not expose credentials through the api', function () {
     $company->mydata_subscription_key = 'abc123secret';
     $company->save();
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->getJson("/api/companies/{$company->id}")
@@ -54,7 +54,7 @@ it('does not expose credentials through the api', function () {
 
 it('sets credentials through the api without returning them', function () {
     $company = Company::factory()->create();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $response = test_case()->actingAs($user)
         ->putJson("/api/companies/{$company->id}/credentials", [
@@ -71,7 +71,7 @@ it('sets credentials through the api without returning them', function () {
 
 it('requires both credential fields', function () {
     $company = Company::factory()->create();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->putJson("/api/companies/{$company->id}/credentials", [

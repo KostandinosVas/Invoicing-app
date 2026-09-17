@@ -14,7 +14,7 @@ it('creates an invoice with lines', function () {
     $company = Company::factory()->create();
     $customer = Customer::factory()->create(['company_id' => $company->id, 'name' => 'Πελάτης ΑΕ']);
     $series = Series::factory()->create(['company_id' => $company->id]);
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/invoices', [
@@ -46,7 +46,7 @@ it('rejects an invoice without lines', function () {
     $company = Company::factory()->create();
     $customer = Customer::factory()->create(['company_id' => $company->id]);
     $series = Series::factory()->create(['company_id' => $company->id]);
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/invoices', [
@@ -67,7 +67,7 @@ it('rejects a customer from another company', function () {
 
     $foreignCustomer = Customer::factory()->create(['company_id' => $companyB->id]);
     $series = Series::factory()->create(['company_id' => $companyA->id]);
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/invoices', [
@@ -94,7 +94,7 @@ it('inherits line data from the item', function () {
         'unit_price_cents' => 10000,
         'vat_rate' => 6,
     ]);
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/invoices', [
@@ -117,7 +117,7 @@ it('issues an invoice', function () {
     $company = Company::factory()->create();
     $customer = Customer::factory()->create(['company_id' => $company->id]);
     $series = Series::factory()->create(['company_id' => $company->id]);
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $created = test_case()->actingAs($user)
         ->postJson('/api/invoices', [
@@ -140,7 +140,7 @@ it('issues an invoice', function () {
 
 it('refuses to issue an already issued invoice', function () {
     $company = Company::factory()->create();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $invoice = Invoice::factory()
         ->forCompany($company)
@@ -157,7 +157,7 @@ it('refuses to issue an already issued invoice', function () {
 it('does not expose lines in the index listing', function () {
     $company = Company::factory()->create();
     Invoice::factory()->forCompany($company)->withLine()->create();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->getJson('/api/invoices')

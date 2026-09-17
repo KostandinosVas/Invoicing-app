@@ -11,7 +11,7 @@ it('requires authentication', function () {
 
 it('lists companies', function () {
     Company::factory()->count(3)->create();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->getJson('/api/companies')
@@ -20,7 +20,7 @@ it('lists companies', function () {
 });
 
 it('creates a company', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/companies', [
@@ -34,7 +34,7 @@ it('creates a company', function () {
 });
 
 it('rejects an invalid vat number', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/companies', [
@@ -47,7 +47,7 @@ it('rejects an invalid vat number', function () {
 
 it('rejects a duplicate vat number', function () {
     Company::factory()->create(['vat_number' => '123456789']);
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/companies', [
@@ -60,7 +60,7 @@ it('rejects a duplicate vat number', function () {
 
 it('does not expose unlisted fields', function () {
     $company = Company::factory()->create();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->getJson("/api/companies/{$company->id}")

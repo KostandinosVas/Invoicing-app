@@ -8,7 +8,7 @@ use App\Models\User;
 
 it('creates a customer in an accessible company', function () {
     $company = Company::factory()->create();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson('/api/customers', [
@@ -24,7 +24,7 @@ it('rejects a customer in an inaccessible company', function () {
     $accessible = Company::factory()->create();
     $forbidden = Company::factory()->create();
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $mock = Mockery::mock($user)->makePartial();
     $mock->shouldReceive('accessibleCompanyIds')->andReturn([$accessible->id]);
@@ -46,7 +46,7 @@ it('filters customers by company', function () {
     Customer::factory()->count(2)->create(['company_id' => $companyA->id]);
     Customer::factory()->create(['company_id' => $companyB->id]);
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->getJson("/api/customers?company_id={$companyA->id}")
