@@ -122,3 +122,12 @@ export type Invoice = {
   mydata_cancellation_mark: string | null;
   cancelled_at: string | null;
 };
+
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'accountant' | 'viewer';
+  can_write: boolean;
+  can_manage_credentials: boolean;
+};

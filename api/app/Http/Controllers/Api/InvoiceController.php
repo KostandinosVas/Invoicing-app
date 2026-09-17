@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SendInvoiceEmailRequest;
 use App\Http\Requests\StoreCreditNoteRequest;
 use App\Http\Requests\StoreInvoiceRequest;
+use App\Http\Resources\ActivityResource;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use App\Services\InvoicePdf;
@@ -119,5 +120,14 @@ final class InvoiceController extends Controller
         $action->handle($invoice, $request->string('email')->toString());
 
         return response()->json(['message' => 'Το παραστατικό στάλθηκε.']);
+    }
+
+    public function activity(Invoice $invoice): AnonymousResourceCollection
+    {
+        $this->authorize('view', $invoice);
+
+        return ActivityResource::collection(
+            $invoice->activitiesAsSubject()->with('causer')->latest()->get()
+        );
     }
 }

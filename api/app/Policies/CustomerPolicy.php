@@ -21,16 +21,18 @@ final class CustomerPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->canWrite();
     }
 
     public function update(User $user, Customer $customer): bool
     {
-        return $this->view($user, $customer);
+        return $user->canWrite() && $this->view($user, $customer);
     }
 
     public function delete(User $user, Customer $customer): bool
     {
-        return $this->view($user, $customer) && $customer->invoices()->doesntExist();
+        return $user->canWrite()
+            && $this->view($user, $customer)
+            && $customer->invoices()->doesntExist();
     }
 }

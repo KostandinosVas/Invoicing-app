@@ -55,7 +55,7 @@ it('sends through the api', function () {
     $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
     (new IssueInvoice)->handle($invoice);
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/email", ['email' => 'pelatis@example.gr'])
@@ -71,7 +71,7 @@ it('rejects an invalid email address', function () {
     $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
     (new IssueInvoice)->handle($invoice);
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/email", ['email' => 'not-an-email'])
@@ -87,7 +87,7 @@ it('refuses to email a draft through the api', function () {
     $company = Company::factory()->create();
     $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/email", ['email' => 'pelatis@example.gr'])

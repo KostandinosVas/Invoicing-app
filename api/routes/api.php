@@ -37,4 +37,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/invoices/{invoice}/cancel', [InvoiceController::class, 'cancel']);
     Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'pdf']);
     Route::post('/invoices/{invoice}/email', [InvoiceController::class, 'email']);
+    Route::get('/invoices/{invoice}/activity', [InvoiceController::class, 'activity']);
 });

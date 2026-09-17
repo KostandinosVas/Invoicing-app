@@ -37,7 +37,7 @@ it('dispatches a cancellation job', function () {
     Queue::fake();
 
     [, $invoice] = submittedInvoice();
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/cancel")
@@ -53,7 +53,7 @@ it('refuses to cancel an invoice without a mark', function () {
     $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
     (new IssueInvoice)->handle($invoice);
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->postJson("/api/invoices/{$invoice->id}/cancel")

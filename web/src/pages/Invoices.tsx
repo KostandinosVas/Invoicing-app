@@ -10,6 +10,7 @@ import type { InvoiceStatus } from '../types/api';
 import tableStyles from '../components/Table.module.css';
 import styles from './Customers.module.css';
 import { LinkButton } from '../components/LinkButton';
+import { useAuth } from '../auth/AuthContext';
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Προσχέδιο' },
@@ -33,7 +34,11 @@ export function Invoices() {
   const companyName = (id: number) =>
     companies.find((c) => c.id === id)?.name ?? '—';
 
-  const action = <LinkButton to="/invoices/new">Νέο παραστατικό</LinkButton>;
+  const { user } = useAuth();
+
+  const action = user?.can_write ? (
+    <LinkButton to="/invoices/new">Νέο παραστατικό</LinkButton>
+  ) : null;
 
   return (
     <>

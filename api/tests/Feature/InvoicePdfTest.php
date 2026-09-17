@@ -51,7 +51,7 @@ it('serves the pdf through the api', function () {
     $invoice = Invoice::factory()->forCompany($company)->withLine()->create();
     (new IssueInvoice)->handle($invoice);
 
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     test_case()->actingAs($user)
         ->get("/api/invoices/{$invoice->id}/pdf")

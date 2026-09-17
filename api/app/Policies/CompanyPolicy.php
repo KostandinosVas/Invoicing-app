@@ -21,12 +21,12 @@ final class CompanyPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->canWrite();
     }
 
     public function update(User $user, Company $company): bool
     {
-        return $this->view($user, $company);
+        return $user->canWrite() && $this->view($user, $company);
     }
 
     public function delete(User $user, Company $company): bool
@@ -36,6 +36,7 @@ final class CompanyPolicy
 
     public function manageCredentials(User $user, Company $company): bool
     {
-        return $this->view($user, $company);
+        return $user->role()->canManageCredentials()
+            && $this->view($user, $company);
     }
 }

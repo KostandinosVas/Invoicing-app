@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\IncomeClassification;
+use App\Enums\Role as RoleEnum;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Item;
@@ -16,11 +17,31 @@ final class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->create([
+        $this->call(RoleSeeder::class);
+
+        $admin = User::factory()->create([
             'name' => 'Κωνσταντίνος Βασίλη',
             'email' => 'test@test.gr',
             'password' => bcrypt('password'),
         ]);
+
+        $admin->assignRole(RoleEnum::Admin->value);
+
+        $accountant = User::factory()->create([
+            'name' => 'Μαρία Λογιστή',
+            'email' => 'logistis@test.gr',
+            'password' => bcrypt('password'),
+        ]);
+
+        $accountant->assignRole(RoleEnum::Accountant->value);
+
+        $viewer = User::factory()->create([
+            'name' => 'Νίκος Προβολή',
+            'email' => 'viewer@test.gr',
+            'password' => bcrypt('password'),
+        ]);
+
+        $viewer->assignRole(RoleEnum::Viewer->value);
 
         $companies = [
             [
@@ -63,7 +84,6 @@ final class DemoSeeder extends Seeder
         foreach ([
             ['code' => 'ΤΙΜ', 'document_type' => 'invoice'],
             ['code' => 'ΠΙΣ', 'document_type' => 'credit_note'],
-            ['code' => 'ΑΚΥ', 'document_type' => 'cancellation'],
         ] as $series) {
             Series::create([...$series, 'company_id' => $company->id]);
         }
