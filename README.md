@@ -118,7 +118,8 @@ and all the way to the error message shown on screen.
 ## Scope
 
 **In:** companies, customers, items, numbering series, invoice issuing with
-per-line VAT, myDATA submission (sandbox), roles at the data model level.
+per-line VAT, myDATA submission and cancellation (sandbox), credit notes, PDF
+generation and email delivery, role-based permissions, audit trail.
 
 **Deliberately out:** accounting entries, trial balances, VAT returns,
 inventory, payroll, payment tracking, multi-language, mobile app. These are
@@ -136,21 +137,29 @@ usually isn't.
 - **401/403 are treated as transient** and trigger pointless retries. Mapping
   HTTP status to permanent vs. retryable is straightforward but was not done.
 - **No alerting.** Failures are logged; nobody reads logs.
-- **Credit notes and cancellations are not implemented.** The data model
-  supports them; the workflow does not. Notably, cancellation in myDATA is a
-  separate API method keyed by MARK, not a document type.
-- **No PDF or email.**
-- **Roles exist in policies but are not enforced** — every authenticated user
-  currently has the same permissions.
+- **No QR code on the PDF.** AADE returns a `qrUrl` with the submission
+  response; without real sandbox credentials that field is always empty, so the
+  code could not be tested.
+- **No UI for myDATA credentials or for assigning roles.** Both endpoints exist
+  and are covered by policies and tests; the screens do not.
+- **The audit trail is not surfaced.** `GET /invoices/{id}/activity` returns it;
+  nothing displays it. Email delivery is not recorded in it at all.
+- **Tenant isolation does not actually restrict anyone.** The Global Scope and
+  `accessibleCompanyIds()` are in place as the mechanism, but the latter
+  currently returns every company — a deliberate choice for a single accounting
+  firm (ADR-0001), and the point at which per-user company access would attach.
 - **Some AADE code mappings are unverified.** VAT category and payment method
   are integer ranges in the XSD with no labels; the semantics live only in the
   specification PDF. Values are structurally valid and isolated in enums, so a
   correction is local.
+- **No deployment.** The application runs locally only. Notably, the queue
+  worker does not pick up new code or config without a restart, which a real
+  deployment script would handle with `queue:restart`.
 
 ## Testing
 
 ```bash
-docker compose exec php ./vendor/bin/pest        # 93 backend tests
+docker compose exec php ./vendor/bin/pest        # 122 backend tests
 docker compose exec php ./vendor/bin/phpstan analyse
 docker compose exec php ./vendor/bin/pint --test
 docker compose exec node npm test                # frontend unit tests
@@ -168,6 +177,11 @@ Tests that earn their place:
 - An invoice keeps its customer snapshot after the customer changes.
 - `0.1 + 0.2 !== 0.3` — asserted explicitly, as the reason the `Money` value
   object exists.
+
+- The generated PDF does not fall back to Helvetica — which would silently
+  render Greek text as question marks.
+- A viewer cannot issue an invoice, and the invoice is left without a number.
+- An accountant cannot set myDATA credentials; an admin can.
 
 ## Project layout
 
