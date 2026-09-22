@@ -5,6 +5,7 @@ import { AppLayout } from './layouts/AppLayout';
 import { Login } from './pages/Login';
 import { Companies } from './pages/Companies';
 import { CompanyCreate } from './pages/CompanyCreate';
+import { CompanyCredentials } from './pages/CompanyCredentials';
 import { Customers } from './pages/Customers';
 import { CustomerCreate } from './pages/CustomerCreate';
 import { Items } from './pages/Items';
@@ -26,15 +27,20 @@ export default function App() {
           <Route element={<RequireAuth />}>
             <Route element={<AppLayout />}>
               <Route path="/" element={<Navigate to="/companies" replace />} />
+
               <Route path="/companies" element={<Companies />} />
               <Route path="/companies/new" element={<CompanyCreate />} />
+              <Route path="/companies/:id/credentials" element={<CompanyCredentials />} />
+
               <Route path="/customers" element={<Customers />} />
               <Route path="/customers/new" element={<CustomerCreate />} />
+
               <Route path="/items" element={<Items />} />
               <Route path="/items/new" element={<ItemCreate />} />
+
               <Route path="/series" element={<SeriesList />} />
               <Route path="/series/new" element={<SeriesCreate />} />
-              <Route path="/invoices/new" element={<InvoiceCreate />} />
+
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/invoices/new" element={<InvoiceCreate />} />
               <Route path="/invoices/:id" element={<InvoiceShow />} />
