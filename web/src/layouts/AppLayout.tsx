@@ -11,8 +11,18 @@ const links = [
   { to: '/series', label: 'Σειρές' },
 ];
 
+const adminLinks = [{ to: '/users', label: 'Χρήστες' }];
+
+const roleLabels = {
+  admin: 'Διαχειριστής',
+  accountant: 'Λογιστής',
+  viewer: 'Προβολή μόνο',
+} as const;
+
 export function AppLayout() {
   const { user, logout } = useAuth();
+
+  const visibleLinks = user?.role === 'admin' ? [...links, ...adminLinks] : links;
 
   return (
     <div className={styles.shell}>
@@ -20,7 +30,7 @@ export function AppLayout() {
         <div className={styles.brand}>Τιμολόγηση</div>
 
         <nav className={styles.nav}>
-          {links.map((link) => (
+          {visibleLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
@@ -37,6 +47,7 @@ export function AppLayout() {
 
         <div className={styles.user}>
           <span className={styles.userName}>{user?.name}</span>
+          {user && <span className={styles.userName}>{roleLabels[user.role]}</span>}
           <Button variant="secondary" size="small" onClick={() => logout()}>
             Αποσύνδεση
           </Button>

@@ -16,6 +16,7 @@ import { InvoiceCreate } from './pages/InvoiceCreate';
 import { Invoices } from './pages/Invoices';
 import { InvoiceShow } from './pages/InvoiceShow';
 import { CreditNoteCreate } from './pages/CreditNoteCreate';
+import { Users } from './pages/Users';
 
 export default function App() {
   return (
@@ -45,6 +46,8 @@ export default function App() {
               <Route path="/invoices/new" element={<InvoiceCreate />} />
               <Route path="/invoices/:id" element={<InvoiceShow />} />
               <Route path="/invoices/:id/credit-notes/new" element={<CreditNoteCreate />} />
+
+              <Route path="/users" element={<Users />} />
             </Route>
           </Route>
 

@@ -140,8 +140,7 @@ usually isn't.
 - **No QR code on the PDF.** AADE returns a `qrUrl` with the submission
   response; without real sandbox credentials that field is always empty, so the
   code could not be tested.
-- **No UI for myDATA credentials or for assigning roles.** Both endpoints exist
-  and are covered by policies and tests; the screens do not.
+
 - **The audit trail is not surfaced.** `GET /invoices/{id}/activity` returns it;
   nothing displays it. Email delivery is not recorded in it at all.
 - **Tenant isolation does not actually restrict anyone.** The Global Scope and
@@ -159,7 +158,7 @@ usually isn't.
 ## Testing
 
 ```bash
-docker compose exec php ./vendor/bin/pest        # 122 backend tests
+docker compose exec php ./vendor/bin/pest        # 130 backend tests
 docker compose exec php ./vendor/bin/phpstan analyse
 docker compose exec php ./vendor/bin/pint --test
 docker compose exec node npm test                # frontend unit tests
